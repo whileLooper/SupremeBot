@@ -256,8 +256,6 @@ api.seek = function(category, keywords, styleSelection, callback) {
         for (i = 0; i < product.length; i++) {
             var title = product[i].title;
             title = title.replace(/&#xFEFF;/g, '').replace(/&#xAE;/g, '®').toLowerCase();
-            console.log(title);
-            console.log(keywords);
 
             var style = product[i].style;
             style = encodeURI(style);
@@ -265,7 +263,6 @@ api.seek = function(category, keywords, styleSelection, callback) {
             style = decodeURI (style).toLowerCase();
 
             if (style === null) {
-                console.log(title);
                 // type - style not defined without a match
                 if (title.indexOf(keywords) > -1) { // check if the keywords match with the title
                     // found item

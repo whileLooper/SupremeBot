@@ -3,7 +3,7 @@ const puppeteer = require('puppeteer');
 var async = require('async');
 const fs = require('fs');
 var jsonfile = require('jsonfile');
-const WORKER_COUNT = 3;
+const WORKER_COUNT = 1;
 var workers = [];
 
 function intializeWorkers(prefs) {
@@ -45,6 +45,7 @@ class SupremeWorker {
 	}
 
 	hasWork () {
+		console.log(this.productDefinition);
 		return this.productDefinition != null;
 	}
 
@@ -56,8 +57,12 @@ class SupremeWorker {
 
 	checkForProduct () {
 		supreme.seek(this.productDefinition.category, this.productDefinition.keywords, this.productDefinition.style, (product, err) => {
+			console.log(product);
 			if (product) {
-				this.buyProduct(product);
+				if (product.availability != "Sold Out")
+					this.buyProduct(product);
+				else
+					this.finishWork ();
 			} else {
 				setTimeout(()=>this.checkForProduct(), 1000);
 			}
@@ -65,14 +70,16 @@ class SupremeWorker {
 	}
 
 	async buyProduct(product) {
-		var browser;
+		this.browser = await puppeteer.launch({ headless: false });
 
-		browser = await puppeteer.launch({ headless: false });
-
-		const page = await browser.newPage();
+		const page = await this.browser.newPage();
 		await page.goto(product.link);
 
 		const ADD_PRODUCT_SELECTOR = '#add-remove-buttons>input';
+		const addProductButton = await page.$(ADD_PRODUCT_SELECTOR);
+		if (!addProductButton)
+			return this.finishWork ();
+
 		await page.click(ADD_PRODUCT_SELECTOR);
 
 		await page.waitFor(1 * 1000);
@@ -113,12 +120,12 @@ class SupremeWorker {
 
 		await page.waitFor(3 * 1000);
 
-		browser.close();
-
 		this.finishWork ();
 	}
 
 	finishWork () {
+		this.browser ? this.browser.close() : null;
+		this.browser = null;
 		this.productDefinition = null;
 		this.callback ();
 	}
