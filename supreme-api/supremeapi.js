@@ -48,13 +48,11 @@ api.getItems = function(category, callback) {
             $('img').each(function(i, element) {
 
                 var nextElement = $(this).next();
-                var prevElement = $(this).prev();
                 var image = "https://" + $(this).attr('src').substring(2);
                 var title = $(this).attr('alt');
                 var availability = nextElement.text().capitalizeEachWord();
                 var link = api.url + this.parent.attribs.href;
                 var sizesAvailable;
-
 
                 if (availability == "") availability = "Available";
 
@@ -227,67 +225,49 @@ api.stopWatchingAllItems = function(callback) {
     }
 }
 
-// searches for new item drop TODO
-api.onNewItem = function(callback) {
-    api.watchAllItems(function(item) {
-        // TODO: If new items is find return callback(value);
-    });
-}
-
-/**
- * Seeks for items on desired category page with specific keywords/styles.
- * @param  {Number} interval
- * @param  {String} category
- * @param  {String} style
- * @param  {String} category
- * @return {Object}
- */
 api.seek = function(category, keywords, styleSelection, callback) {
-    var productLink = [];
     category = category ? category.toLowerCase() : null;
     keywords = keywords ? keywords.toLowerCase() : null;
     styleSelection = styleSelection ? styleSelection.toLowerCase() : null;
     api.getItems(category, (product, err) => {
 
-        if (err) {
+        if (err || !product) {
             return callback(null, 'Error occured while trying to seek for items.');
         }
 
         for (i = 0; i < product.length; i++) {
             var title = product[i].title;
-            title = title.replace(/&#xFEFF;/g, '').replace(/&#xAE;/g, '®').toLowerCase();
+            if (!title) {
+                console.log("Error occurred, retrieved, missing product informations", product[i]);
+                continue;
+            }
 
+            console.log(title);
+            title = title.replace(/&#xFEFF;/g, '').replace(/&#xAE;/g, '®').toLowerCase();
             var style = product[i].style;
             style = encodeURI(style);
             style = style.replace (/%EF%BB%BF/g,"");
             style = decodeURI (style).toLowerCase();
 
+            console.log(title);
+            console.log(keywords);
+
             if (style === null) {
-                // type - style not defined without a match
-                if (title.indexOf(keywords) > -1) { // check if the keywords match with the title
-                    // found item
-                    productLink.push(product[i].link);
+                if (title.indexOf(keywords) > -1) {
                     return callback(product[i], null);
-                    break;
                 } else {
                     continue;
                 }
             } else if (!styleSelection || style.indexOf(styleSelection) > -1) {
-                // type - style defined with match
-                if (title.indexOf(keywords) > -1) { // check if the keywords match with the title
-                    // found item
-                    productLink.push(product[i].link);
+                if (title.indexOf(keywords) > -1) {
                     return callback(product[i], null);
-                    break;
                 } else {
                     continue;
                 }
             }
         }
 
-        if (productLink[0] === undefined) {
-            return callback(null, "Could not find any results matching your keywords.");
-        }
+        return callback(null, "Could not find any results matching your keywords.");
 
     });
 }

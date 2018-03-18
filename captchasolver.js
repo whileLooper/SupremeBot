@@ -2,7 +2,10 @@ function CaptchaSolver(key) {
 
   var anticaptcha = require('anticaptcha-nodejs')(key);
 
-  this.solveCaptcha = function (url, websiteKey, callback) {
+  this.solveCaptcha = function (url, websiteKey, callback, isTest) {
+    if (isTest)
+      return setTimeout(() => callback('123456'), 5* 1000);
+
     anticaptcha.setWebsiteURL(url);
     anticaptcha.setWebsiteKey(websiteKey);
     anticaptcha.setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116");
