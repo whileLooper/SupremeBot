@@ -5,6 +5,7 @@ var jsonfile = require('jsonfile');
 var captchaSolver = require('./captchasolver');
 var buyProductPuppeteer = require('./buyProductPuppeteer');
 const WORKER_COUNT = 1;
+const WORKER_TIMEOUT_MS = 1000* 60 * 12;
 var workers = [];
 var isHeadless = process.argv [2] != "testing"
 
@@ -38,6 +39,7 @@ function startDrop(mainCallback) {
 		assignToWorker(itemDefinition, callback);
 	}, (err) => {
 		workers.map(worker => worker.stop());
+		workers = [];
 		mainCallback();
 	});
 }
@@ -48,6 +50,7 @@ class SupremeWorker {
 		this.prefs = prefs;
 		this.solver = solver;
 		this.buyApi = new buyProductPuppeteer.BuyProductPuppeteer();
+		this.startTimestampMS = Date().now;
 		this.getCaptchaToken();
 	}
 
@@ -61,7 +64,14 @@ class SupremeWorker {
 		this.checkForProduct();
 	}
 
+	checkForTimeout () {
+		const differenceMS = Date.now() - this.startTimestampMS
+		if (differenceMS > WORKER_TIMEOUT_MS)
+			this.stop ();
+	}
+
 	getCaptchaToken() {
+		this.checkForTimeout ();
 		if (this.stopped == true)
 			return;
 
@@ -113,10 +123,25 @@ class SupremeWorker {
 	}
 
 	stop() {
+		this.buyApi.stop ();
 		this.stopped = true;
 	}
 }
 
-startDrop(() => {
-	console.log("finished!");
-})
+// startDrop(() => {
+// 	console.log("finished!");
+// });
+
+function waitForDrop () {
+	const date = new Date();
+	if (date.getDay() == 4 && 
+		date.getUTCHours() == 10 &&
+		date.getMinutes() > 57) {
+		console.log("Drop will be soon! Bot starts to prepare!")
+		startDrop (() => waitForDrop());
+	} else {
+		setTimeout(() => waitForDrop (), 10000);
+	}
+}
+
+waitForDrop ();

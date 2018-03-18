@@ -67,10 +67,18 @@ class BuyProductPuppeteer {
 
             finishCallback();
         } catch (e) {
-            browser.close();
-            retryCallback();
             console.log(e);
+            try {
+                browser.close();
+            } catch (expection) {}
+            retryCallback();
         }
+    }
+
+    stop () {
+        try {
+            browser.close();
+        } catch (expection) {}
     }
 }
 
