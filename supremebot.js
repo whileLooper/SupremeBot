@@ -6,6 +6,7 @@ var captchaSolver = require('./captchasolver');
 var buyProductPuppeteer = require('./buyProductPuppeteer');
 const WORKER_COUNT = 1;
 var workers = [];
+var isHeadless = process.argv [2] != "testing"
 
 function intializeWorkers(prefs, solver) {
 	workers = [];
@@ -103,7 +104,7 @@ class SupremeWorker {
 	}
 
 	buyProduct(product, sizeId) {
-		this.buyApi.buyProduct(product, sizeId, this.prefs, () => this.finishWork(), () => this.checkForProduct());
+		this.buyApi.buyProduct(product, sizeId, this.prefs, isHeadless, () => this.finishWork(), () => this.checkForProduct());
 	}
 
 	finishWork() {
