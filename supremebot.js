@@ -1,9 +1,9 @@
-const supreme = require('./supreme-api/supremeapi');
-const puppeteer = require('puppeteer');
+var supreme = require('./supreme-api/supremeapi');
 var async = require('async');
-const fs = require('fs');
+var fs = require('fs');
 var jsonfile = require('jsonfile');
 var captchaSolver = require('./captchasolver');
+var buyProductPuppeteer = require('./buyProductPuppeteer');
 const WORKER_COUNT = 1;
 var workers = [];
 
@@ -46,6 +46,7 @@ class SupremeWorker {
 	constructor(prefs, solver) {
 		this.prefs = prefs;
 		this.solver = solver;
+		this.buyApi = new buyProductPuppeteer.BuyProductPuppeteer();
 		this.getCaptchaToken();
 	}
 
@@ -65,7 +66,7 @@ class SupremeWorker {
 
 		const startTimestampMs = Date.now();
 		this.solver.solveCaptcha('https://www.supremenewyork.com/checkout', '6LeWwRkUAAAAAOBsau7KpuC9AV-6J8mhw4AjC3Xz', (captchaToken) => {
-			console.log("New captcha token: "+ captchaToken);
+			console.log("New captcha token: " + captchaToken);
 			this.captchaToken = captchaToken;
 			const endTimestampMS = Date.now();
 			const difference = endTimestampMS - startTimestampMs;
@@ -101,73 +102,11 @@ class SupremeWorker {
 		return sizeName ? product.sizesAvailable.find(sizeObject => sizeObject.size == sizeName).id : null;
 	}
 
-	async buyProduct(product, sizeId) {
-		try {
-			this.browser = await puppeteer.launch({ headless: false });
-
-			const page = await this.browser.newPage();
-			await page.goto(product.link);
-
-			const SIZE_SELECTOR = "#size";
-			await page.select(SIZE_SELECTOR, sizeId.toString());
-
-			const ADD_PRODUCT_SELECTOR = '#add-remove-buttons>input';
-			const addProductButton = await page.$(ADD_PRODUCT_SELECTOR);
-			if (!addProductButton)
-				return this.finishWork();
-
-			await page.click(ADD_PRODUCT_SELECTOR);
-
-			await page.waitFor(1 * 1000);
-
-			const CHECKOUT_SELECTOR = '#cart .checkout';
-			await page.click(CHECKOUT_SELECTOR);
-
-			await page.waitFor(1 * 1000);
-
-			const NAME_SELECTOR = '#order_billing_name';
-			const EMAIL_SELECTOR = '#order_email';
-			const TEL_SELECTOR = '#order_tel';
-			const ADRESS_SELECTOR = '#bo';
-			const CITY_SELECTOR = '#order_billing_city';
-			const ZIP_SELECTOR = '#order_billing_zip';
-			const COUNTRY_SELECTOR = '#order_billing_country';
-			const CARD_TYPE_SELECTOR = '#credit_card_type';
-			const CARD_NUMBER_SELECTOR = '#cnb';
-			const CARD_MONTH_SELECTOR = '#credit_card_month';
-			const CARD_YEAR_SELECTOR = '#credit_card_year';
-			const CARD_VVAL_SELECTOR = '#vval';
-			const TERMS_SELECTOR = '#order_terms'
-
-			// await page.$eval(NAME_SELECTOR, (el, value) => el.value = value, this.prefs.name);
-			// await page.$eval(EMAIL_SELECTOR, (el, value) => el.value = value, this.prefs.email);
-			// await page.$eval(TEL_SELECTOR, (el, value) => el.value = value, this.prefs.tel);
-			// await page.$eval(ADRESS_SELECTOR, (el, value) => el.value = value, this.prefs.adress);
-			// await page.$eval(CITY_SELECTOR, (el, value) => el.value = value, this.prefs.city);
-			// await page.$eval(ZIP_SELECTOR, (el, value) => el.value = value, this.prefs.zip);
-			// await page.$eval(COUNTRY_SELECTOR, (el, value) => el.value = value, this.prefs.country);
-			// await page.$eval(CARD_TYPE_SELECTOR, (el, value) => el.value = value, this.prefs.cardType);
-			// await page.$eval(CARD_NUMBER_SELECTOR, (el, value) => el.value = value, this.prefs.cardNumber);
-			// await page.$eval(CARD_MONTH_SELECTOR, (el, value) => el.value = value, this.prefs.cardMonth);
-			// await page.$eval(CARD_YEAR_SELECTOR, (el, value) => el.value = value, this.prefs.cardYear);
-			// await page.$eval(CARD_VVAL_SELECTOR, (el, value) => el.value = value, this.prefs.cardVval);
-
-			await page.evaluate('checkoutAfterCaptcha();');
-
-			// await page.click(TERMS_SELECTOR);
-
-			await page.waitFor(3 * 1000);
-
-			this.finishWork();
-		} catch (e) {
-			this.browser.close();
-			this.checkForProduct();
-			console.log(e);
-		}
+	buyProduct(product, sizeId) {
+		this.buyApi.buyProduct(product, sizeId, this.prefs, () => this.finishWork(), () => this.checkForProduct());
 	}
 
 	finishWork() {
-		this.browser ? this.browser.close() : null;
 		this.productDefinition = null;
 		this.callback();
 	}

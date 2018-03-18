@@ -242,15 +242,11 @@ api.seek = function(category, keywords, styleSelection, callback) {
                 continue;
             }
 
-            console.log(title);
             title = title.replace(/&#xFEFF;/g, '').replace(/&#xAE;/g, '®').toLowerCase();
             var style = product[i].style;
             style = encodeURI(style);
             style = style.replace (/%EF%BB%BF/g,"");
             style = decodeURI (style).toLowerCase();
-
-            console.log(title);
-            console.log(keywords);
 
             if (style === null) {
                 if (title.indexOf(keywords) > -1) {
