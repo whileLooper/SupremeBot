@@ -2,9 +2,9 @@ const puppeteer = require('puppeteer');
 
 class BuyProductPuppeteer {
 
-    async buyProduct(product, sizeId, prefs, isHeadless, finishCallback, retryCallback) {
+    async buyProduct(product, sizeId, prefs, isTesting, finishCallback, retryCallback) {
         var args = {args: ['--no-sandbox']};
-        isHeadless ? args.headless = true : args.headless = false;
+        isTesting ? args.headless = false : args.headless = true;
         var browser = await puppeteer.launch(args);
         try {
 

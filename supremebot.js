@@ -4,10 +4,10 @@ var fs = require('fs');
 var jsonfile = require('jsonfile');
 var captchaSolver = require('./captchasolver');
 var buyProductPuppeteer = require('./buyProductPuppeteer');
-const WORKER_COUNT = 1;
+const WORKER_COUNT = 5;
 const WORKER_TIMEOUT_MS = 1000* 60 * 12;
 var workers = [];
-var isHeadless = process.argv [2] != "testing"
+var isTesting = process.argv [2] == "testing"
 
 function intializeWorkers(prefs, solver) {
 	workers = [];
@@ -114,7 +114,7 @@ class SupremeWorker {
 	}
 
 	buyProduct(product, sizeId) {
-		this.buyApi.buyProduct(product, sizeId, this.prefs, isHeadless, () => this.finishWork(), () => this.checkForProduct());
+		this.buyApi.buyProduct(product, sizeId, this.prefs, isTesting, () => this.finishWork(), () => this.checkForProduct());
 	}
 
 	finishWork() {
@@ -128,10 +128,6 @@ class SupremeWorker {
 	}
 }
 
-// startDrop(() => {
-// 	console.log("finished!");
-// });
-
 function waitForDrop () {
 	const date = new Date();
 	if (date.getDay() == 4 && 
@@ -144,4 +140,7 @@ function waitForDrop () {
 	}
 }
 
-waitForDrop ();
+if (isTesting)
+	startDrop (()=> process.exit());
+else
+	waitForDrop ();
