@@ -11,7 +11,9 @@ class BuyOnMobile {
             const style = styles[0];
             await page.goto('https://www.supremenewyork.com/mobile#products/'+ product.id +'/'+ style.id);
 
-            await page.waitFor(1 * 1000);
+            const ADD_PRODUCT_SELECTOR = '#cart-update > .cart-button';
+            //this selector should always be there because it applies on the sold out button too
+            await page.waitForSelector(ADD_PRODUCT_SELECTOR);
 
             const SIZE_SELECTOR = "#size-options";
             const sizeInput = await page.$(SIZE_SELECTOR);
@@ -25,7 +27,6 @@ class BuyOnMobile {
                 await page.$eval(SIZE_SELECTOR, (el, size) => el.value = size, choosenSize);
             }
 
-            const ADD_PRODUCT_SELECTOR = '#cart-update > .cart-button';
             const SOLD_OUT_SELECTOR_SELECTOR = '#cart-update > .cart-button.sold-out';
             const soldOutButton = await page.$(SOLD_OUT_SELECTOR_SELECTOR);
             if (soldOutButton) {
@@ -35,13 +36,12 @@ class BuyOnMobile {
 
             await page.click(ADD_PRODUCT_SELECTOR);
 
-            await page.waitFor(1 * 1000);
-
             const CHECKOUT_SELECTOR = '#checkout-now';
+            await page.waitFor(1 * 250);
 
             await page.click(CHECKOUT_SELECTOR);
 
-            await page.waitFor(1 * 1000);
+            await page.waitFor(1 * 250);
 
             const MAIN_SELECTOR = '#main';
             const NAME_SELECTOR = '#order_billing_name';
