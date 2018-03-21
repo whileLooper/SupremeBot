@@ -154,22 +154,16 @@ class SupremeWorker {
 		this.productDefinition.sizes = this.productDefinition.sizes.map(style => style.toLowerCase());
 		return product.styles.map(style => {
 			const sizes = style.sizes.filter(size => {
-				return this.productDefinition.sizes.includes(this.formatStyle(size.name))
+				return this.productDefinition.sizes.includes(formatStyle(size.name))
 					&& size.stock_level === 1;
 			}).map(size => size.id + "");
 			return {
-				name: this.formatStyle(style.name),
+				name: formatStyle(style.name),
 				id: style.id + "",
 				sizes: sizes
 			}
 		}).filter(style => style.sizes.length > 0)
 			.filter(style => this.productDefinition.styles.includes(style.name));
-	}
-
-	static formatStyle(string) {
-		string = encodeURI(string);
-		string = string.replace(/%EF%BB%BF/g, "");
-		return decodeURI(string).toLowerCase();
 	}
 
 	stop() {
@@ -188,6 +182,12 @@ function waitForDrop() {
 	} else {
 		setTimeout(() => waitForDrop(), 10000);
 	}
+}
+
+function formatStyle(string) {
+	string = encodeURI(string);
+	string = string.replace(/%EF%BB%BF/g, "");
+	return decodeURI(string).toLowerCase();
 }
 
 function isTimestampOlderThan(timestamp, treshold) {

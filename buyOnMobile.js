@@ -2,8 +2,15 @@ const puppeteer = require('puppeteer');
 
 class BuyOnMobile {
 
+    htmlToElement(html) {
+        var template = document.createElement('template');
+        html = html.trim(); // Never return a text node of whitespace as the result
+        template.innerHTML = html;
+        return template.content.firstChild;
+    }
+
     async buyProduct(product, styles, prefs, captchaToken, isTesting, finishCallback, retryCallback) {
-        var args = {args: ['--no-sandbox']};
+        var args = { args: ['--no-sandbox'] };
         isTesting ? args.headless = false : args.headless = true;
         var browser = await puppeteer.launch(args);
         try {
@@ -37,7 +44,7 @@ class BuyOnMobile {
             await page.click(ADD_PRODUCT_SELECTOR);
 
             const CHECKOUT_SELECTOR = '#checkout-now';
-            
+
             await page.waitFor(1 * 250);
 
             await page.click(CHECKOUT_SELECTOR);
@@ -75,16 +82,24 @@ class BuyOnMobile {
             await page.$eval(CARD_VVAL_SELECTOR, (el, value) => el.value = value, prefs.cardVval);
 
             const RECAPTCHA_RESPONSE_SELECTOR = '#g-recaptcha-response';
-            const htmlElement = htmlToElement("<textarea id=\"g-recaptcha-response\" name=\"g-recaptcha-response\" " +
-                "class=\"g-recaptcha-response\" style=\"width: 250px; height: 40px;\"></textarea>");
-            await page.evaluate((htmlElement) => {
+            console.log(this.htmlToElement);
+            await page.evaluate(function (func) {
+                let template = document.createElement('template');
+                let html = "<textarea id=\"g-recaptcha-response\" name=\"g-recaptcha-response\" " +
+                "class=\"g-recaptcha-response\" style=\"width: 250px; height: 40px;\"></textarea>";
+                html = html.trim();
+                template.innerHTML = html;
+                const htmlElement = template.content.firstChild;
                 document.querySelector("#g-recaptcha").appendChild(htmlElement);
-            }, htmlElement);
+            }, this.htmlToElement);
             await page.$eval(RECAPTCHA_RESPONSE_SELECTOR, (el, value) => el.value = value, captchaToken);
 
             // await page.evaluate('checkoutAfterCaptcha();');
 
             // await page.click(TERMS_SELECTOR);
+
+            const SUBMIT_BUTTON_SELECTOR = "#submit_button";
+            await page.click(SUBMIT_BUTTON_SELECTOR);
 
             await page.waitFor(3 * 1000);
 
@@ -107,13 +122,6 @@ class BuyOnMobile {
         } catch (expection) {
         }
     }
-}
-
-function htmlToElement(html) {
-    var template = document.createElement('template');
-    html = html.trim(); // Never return a text node of whitespace as the result
-    template.innerHTML = html;
-    return template.content.firstChild;
 }
 
 exports.BuyOnMobile = BuyOnMobile;
