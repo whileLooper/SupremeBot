@@ -3,10 +3,10 @@ var async = require('async');
 var jsonfile = require('jsonfile');
 var captchaSolver = require('./captchasolver');
 var buyOnMobile = require('./buyOnMobile');
-const WORKER_COUNT = 1;
+const WORKER_COUNT = 2;
 const WORKER_TIMEOUT_MS = 1000 * 60 * 2;
 var workers = [];
-var isTesting = process.argv.length > 2 ? process.argv [2] === 'testing' : false;
+var isTesting = process.argv.length > 2 ? process.argv[2] === 'testing' : false;
 
 function intializeWorkers(prefs, captchaPool) {
 	workers = [];
@@ -56,11 +56,9 @@ class CaptchaPool {
 	updateCaptchaPool() {
 		if (this.stopped)
 			return;
-		
-		this.captchaList = this.captchaList.filter(captcha => !isTimestampOlderThan(captcha.timestamp, 1000 * 90));
+
+		this.captchaList = this.captchaList.filter(captcha => !isTimestampOlderThan(captcha.timestamp, 1000 * 100));
 		const onlyNewCaptchas = this.captchaList.filter(captcha => !isTimestampOlderThan(captcha.timestamp, 1000 * 60));
-		console.log(onlyNewCaptchas);
-		console.log(this.captchaList);
 		if (onlyNewCaptchas.length + this.inProgress < WORKER_COUNT * 2) {
 			this.requestNewCaptcha();
 		}
@@ -70,17 +68,16 @@ class CaptchaPool {
 	requestNewCaptcha() {
 		this.inProgress++;
 		this.solver.solveCaptcha('https://www.supremenewyork.com/checkout', '6LeWwRkUAAAAAOBsau7KpuC9AV-6J8mhw4AjC3Xz', captchaToken => {
-			console.log("New captcha token: " + captchaToken);
-			this.captchaList.push({token:captchaToken, timestamp:Date.now()});
+			this.captchaList.push({ token: captchaToken, timestamp: Date.now() });
 			this.inProgress--;
-		}, true);
+		}, isTesting);
 	}
 
 	getCaptcha() {
 		return this.captchaList.length > 0 ? this.captchaList.shift() : null;
 	}
 
-	stop () {
+	stop() {
 		this.stopped = true;
 	}
 }
@@ -116,20 +113,23 @@ class SupremeWorker {
 			return;
 
 		supremeMobile.findItem(this.productDefinition.category, this.productDefinition.keywords, product => {
-			if (product && this.getCaptcha ()) {
+			const startTime = new Date();
+			if (product && this.getCaptcha()) {
 				const availableStyles = this.getAvailableStyles(product);
-				if (availableStyles.length > 0)
+				console.log(availableStyles);
+				if (availableStyles.length > 0) {
+					console.log("Start Time: " + startTime);
 					this.buyProduct(product, availableStyles);
-				else
+				} else
 					this.finishWork(false);
 			} else {
-				setTimeout(() => this.checkForProduct(), 1000);
+				setTimeout(() => this.checkForProduct(), 500);
 			}
 		});
 	}
 
-	getCaptcha () {
-		if (this.captcha && !isTimestampOlderThan(this.captcha.timestamp, 1000* 100)) {
+	getCaptcha() {
+		if (this.captcha && !isTimestampOlderThan(this.captcha.timestamp, 1000 * 105)) {
 			return this.captcha;
 		} else {
 			this.captcha = this.captchaPool.getCaptcha();
@@ -156,18 +156,21 @@ class SupremeWorker {
 	getAvailableStyles(product) {
 		this.productDefinition.styles = this.productDefinition.styles.map(style => style.toLowerCase());
 		this.productDefinition.sizes = this.productDefinition.sizes.map(style => style.toLowerCase());
-		return product.styles.map(style => {
-			const sizes = style.sizes.filter(size => {
-				return this.productDefinition.sizes.includes(formatStyle(size.name))
-					&& size.stock_level === 1;
-			}).map(size => size.id + "");
-			return {
-				name: formatStyle(style.name),
-				id: style.id + "",
-				sizes: sizes
-			}
-		}).filter(style => style.sizes.length > 0)
-			.filter(style => this.productDefinition.styles.includes(style.name));
+		return this.productDefinition.styles.map(styleDefinition => styleDefinition.toLowerCase())
+			.map(styleDefinition => {
+				var foundStyle = product.styles.find(style => styleDefinition === formatStyle(style.name));
+				const sizes = this.productDefinition.sizes.map ( sizeDefiniton => {
+					return foundStyle.sizes.find ( size => formatStyle(size.name) === sizeDefiniton);
+				}).filter(size => size != null)
+				.filter (size => size.stock_level === 1)
+				.map (size => size.id+"");
+
+				return {
+					id: foundStyle ? foundStyle.id+"" : "",
+					sizes: sizes
+				}
+			}).filter(style => style.sizes.length > 0)
+			.filter(style => style.id);
 	}
 
 	stop() {

@@ -23,7 +23,7 @@ function CaptchaSolver(key) {
             return;
           }
 
-          console.log(taskId);
+          console.log("Captcha Task started:"+ taskId, new Date());
 
           anticaptcha.getTaskSolution(taskId, function (err, taskSolution) {
             if (err) {
@@ -31,7 +31,7 @@ function CaptchaSolver(key) {
               return;
             }
 
-            console.log(taskSolution);
+            console.log("Captcha Token Received: "+taskSolution, new Date());
             callback(taskSolution);
           });
         });

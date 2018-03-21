@@ -10,6 +10,7 @@ class BuyOnMobile {
     }
 
     async buyProduct(product, styles, prefs, captchaToken, isTesting, finishCallback, retryCallback) {
+        console.log("Mid   Time: "+ new Date());
         var args = { args: ['--no-sandbox'] };
         isTesting ? args.headless = false : args.headless = true;
         var browser = await puppeteer.launch(args);
@@ -31,7 +32,7 @@ class BuyOnMobile {
                         return elems.map(elem => elem.value).includes(size);
                     });
                 }, style);
-                await page.$eval(SIZE_SELECTOR, (el, size) => el.value = size, choosenSize);
+                page.select(SIZE_SELECTOR, choosenSize);
             }
 
             const SOLD_OUT_SELECTOR_SELECTOR = '#cart-update > .cart-button.sold-out';
@@ -42,13 +43,10 @@ class BuyOnMobile {
             }
 
             await page.click(ADD_PRODUCT_SELECTOR);
+            await page.waitFor(500);
 
             const CHECKOUT_SELECTOR = '#checkout-now';
-
-            await page.waitFor(1 * 250);
-
             await page.click(CHECKOUT_SELECTOR);
-
 
             const MAIN_SELECTOR = '#main';
             const NAME_SELECTOR = '#order_billing_name';
@@ -93,18 +91,27 @@ class BuyOnMobile {
             }, this.htmlToElement);
             await page.$eval(RECAPTCHA_RESPONSE_SELECTOR, (el, value) => el.value = value, captchaToken);
 
-            // await page.evaluate('checkoutAfterCaptcha();');
+            await page.click(TERMS_SELECTOR);
 
-            // await page.click(TERMS_SELECTOR);
+            await page.waitFor(750);
 
             const SUBMIT_BUTTON_SELECTOR = "#submit_button";
             await page.click(SUBMIT_BUTTON_SELECTOR);
 
-            await page.waitFor(300 * 1000);
+            console.log("End   Time: "+new Date());
 
-            await browser.close();
-
-            finishCallback(true);
+            page.on('response', response => {
+				const reqUrl = response.request().url(); 
+				if (reqUrl === 'https://www.supremenewyork.com/checkout.json'){
+					response.text().then(body => {
+                        console.log(body);
+                        browser.close();
+                        finishCallback(true);
+					}).catch (err => {
+						browser.close();
+					});
+				}
+			});
         } catch (e) {
             console.log(e);
             try {

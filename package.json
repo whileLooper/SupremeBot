@@ -1,0 +1,27 @@
+{
+  "name": "SupremeBot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "buyOnMobile.js",
+  "dependencies": {
+    "anticaptcha-nodejs": "^1.0.1",
+    "async": "^2.6.0",
+    "jsonfile": "^4.0.0",
+    "puppeteer": "^1.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/plundergames/SupremeBot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/plundergames/SupremeBot/issues"
+  },
+  "homepage": "https://github.com/plundergames/SupremeBot#readme"
+}

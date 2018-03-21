@@ -25,9 +25,9 @@ api.findItem = function (category, keywords, callback) {
                         var name = encodeURI(product.name);
                         name = name.replace(/%EF%BB%BF/g, "");
                         name = decodeURI(name).toLowerCase();
-                        if (keywords.split(" ").every (keyword => name.includes(keyword))) {
+                        if (keywords.split(" ").every(keyword => name.includes(keyword))) {
                             product.name = name;
-                            api.getItem (product.id, product.name, callback);
+                            api.getItem(product.id, product.name, callback);
                             return true;
                         }
                     })
@@ -35,6 +35,8 @@ api.findItem = function (category, keywords, callback) {
             });
             if (!foundItem)
                 callback(null);
+        }).catch(e => {
+            return null;
         });
 };
 
@@ -42,7 +44,7 @@ api.getItem = function (id, name, callback) {
     const opts = {
         method: 'GET',
         json: true,
-        uri: 'https://www.supremenewyork.com/shop/'+id+'.json',
+        uri: 'https://www.supremenewyork.com/shop/' + id + '.json',
         headers: {
             'Accept': 'application/json'
         }
@@ -52,7 +54,7 @@ api.getItem = function (id, name, callback) {
         .then(json => {
             json.name = name;
             json.id = id;
-            callback (json);
+            callback(json);
         });
 }
 
