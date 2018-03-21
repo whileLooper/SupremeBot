@@ -38,7 +38,7 @@ class BuyOnMobile {
             const soldOutButton = await page.$(SOLD_OUT_SELECTOR_SELECTOR);
             if (soldOutButton) {
                 await browser.close();
-                return finishCallback();
+                return finishCallback(false);
             }
 
             await page.click(ADD_PRODUCT_SELECTOR);
@@ -82,7 +82,6 @@ class BuyOnMobile {
             await page.$eval(CARD_VVAL_SELECTOR, (el, value) => el.value = value, prefs.cardVval);
 
             const RECAPTCHA_RESPONSE_SELECTOR = '#g-recaptcha-response';
-            console.log(this.htmlToElement);
             await page.evaluate(function (func) {
                 let template = document.createElement('template');
                 let html = "<textarea id=\"g-recaptcha-response\" name=\"g-recaptcha-response\" " +
@@ -101,11 +100,11 @@ class BuyOnMobile {
             const SUBMIT_BUTTON_SELECTOR = "#submit_button";
             await page.click(SUBMIT_BUTTON_SELECTOR);
 
-            await page.waitFor(3 * 1000);
+            await page.waitFor(300 * 1000);
 
             await browser.close();
 
-            finishCallback();
+            finishCallback(true);
         } catch (e) {
             console.log(e);
             try {

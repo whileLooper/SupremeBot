@@ -25,7 +25,7 @@ api.findItem = function (category, keywords, callback) {
                         var name = encodeURI(product.name);
                         name = name.replace(/%EF%BB%BF/g, "");
                         name = decodeURI(name).toLowerCase();
-                        if (name.includes(keywords)) {
+                        if (keywords.split(" ").every (keyword => name.includes(keyword))) {
                             product.name = name;
                             api.getItem (product.id, product.name, callback);
                             return true;

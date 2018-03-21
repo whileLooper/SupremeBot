@@ -56,8 +56,11 @@ class CaptchaPool {
 	updateCaptchaPool() {
 		if (this.stopped)
 			return;
-		this.captchaList = this.captchaList.filter(captcha => !isTimestampOlderThan(captcha.timestamp, 1000 * 60 * 2));
+		
+		this.captchaList = this.captchaList.filter(captcha => !isTimestampOlderThan(captcha.timestamp, 1000 * 90));
 		const onlyNewCaptchas = this.captchaList.filter(captcha => !isTimestampOlderThan(captcha.timestamp, 1000 * 60));
+		console.log(onlyNewCaptchas);
+		console.log(this.captchaList);
 		if (onlyNewCaptchas.length + this.inProgress < WORKER_COUNT * 2) {
 			this.requestNewCaptcha();
 		}
@@ -118,7 +121,7 @@ class SupremeWorker {
 				if (availableStyles.length > 0)
 					this.buyProduct(product, availableStyles);
 				else
-					this.finishWork();
+					this.finishWork(false);
 			} else {
 				setTimeout(() => this.checkForProduct(), 1000);
 			}
@@ -140,11 +143,12 @@ class SupremeWorker {
 			this.prefs,
 			this.captcha.token,
 			isTesting,
-			() => this.finishWork(),
+			(hasUsedCaptcha) => this.finishWork(hasUsedCaptcha),
 			() => this.checkForProduct());
 	}
 
-	finishWork() {
+	finishWork(hasUsedCaptcha) {
+		this.captcha = hasUsedCaptcha ? null : this.captcha;
 		this.productDefinition = null;
 		this.callback();
 	}
