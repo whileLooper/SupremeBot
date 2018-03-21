@@ -1,5 +1,6 @@
 var cheerio = require('cheerio');
 var request = require('request');
+var looksSame = require('looks-same');
 var request = require('request').defaults({
     //timeout: 30000
 });
@@ -17,9 +18,9 @@ String.prototype.capitalizeEachWord = function () {
 api.getItems = function (category, callback) {
 
     var getURL = api.url + '/shop/all/' + category;
-    if (category == 'all') {
+    if (category === 'all') {
         getURL = api.url + '/shop/all';
-    } else if (category == 'new') {
+    } else if (category === 'new') {
         getURL = api.url + '/shop/new';
     }
 
@@ -28,8 +29,8 @@ api.getItems = function (category, callback) {
         if (err) {
             console.log('err')
             return callback('No response from website', null);
-        } 
-        
+        }
+
         var $ = cheerio.load(html);
 
         var count = $('img').length;
@@ -209,7 +210,7 @@ api.watchAllItems = function (interval, category, callback) {
             callback(items, null);
         });
     }, 1000 * interval); // Every xx sec
-}
+};
 
 api.stopWatchingAllItems = function (callback) {
     clearInterval(api.watchOnAllItems);
@@ -218,7 +219,7 @@ api.stopWatchingAllItems = function (callback) {
     } else {
         callback('Watching has stopped.', null);
     }
-}
+};
 
 api.seek = function (category, keywords, styleSelection, callback) {
     category = category ? category.toLowerCase() : null;
@@ -261,10 +262,46 @@ api.seek = function (category, keywords, styleSelection, callback) {
         return callback(null, "Could not find any results matching your keywords.");
 
     });
+};
+
+api.seekByImage = function (image, callback) {
+    var url = api.url + '/shop/all';
+
+    request(url, function (error, response, body) {
+
+        var $ = cheerio.load(body);
+        var length = $('img').length;
+
+        $('img').each(() => {
+            if (length <= 0)
+                return false;
+
+            var foundImage = "https://" + $(this).attr('src').substring(2);
+            var nextElement = $(this).next();
+            var product = {
+                title: $(this).attr('alt'),
+                isAvailable: nextElement.text() === "",
+                link: api.url + this.parent.attribs.href
+            };
+
+            looksSame(image, foundImage, function (error, equal) {
+                if (equal) {
+                    callback(product);
+                    length = -1;
+                } else {
+                    length--;
+                    if (length <= 0) {
+                        callback(null);
+                    }
+                }
+            });
+        });
+    });
+
 }
 
 api.log = function (message) {
     console.log('[supreme api] ' + message);
-}
+};
 
 module.exports = api;
