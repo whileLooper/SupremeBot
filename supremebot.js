@@ -1,14 +1,12 @@
-var supreme = require('./supreme-api/supremeapi');
 var supremeMobile = require('./supreme-api/suprememobileapi');
 var async = require('async');
-var fs = require('fs');
 var jsonfile = require('jsonfile');
 var captchaSolver = require('./captchasolver');
 var buyOnMobile = require('./buyOnMobile');
 const WORKER_COUNT = 1;
-const WORKER_TIMEOUT_MS = 1000* 60 * 12;
+const WORKER_TIMEOUT_MS = 1000 * 60 * 12;
 var workers = [];
-var isTesting = process.argv [2] == "testing"
+var isTesting = process.argv.length > 2 ? process.argv [2] === 'testing' : false;
 
 function intializeWorkers(prefs, solver) {
 	workers = [];
@@ -65,19 +63,19 @@ class SupremeWorker {
 		this.checkForProduct();
 	}
 
-	checkForTimeout () {
+	checkForTimeout() {
 		const differenceMS = Date.now() - this.startTimestampMS
 		if (differenceMS > WORKER_TIMEOUT_MS)
-			this.stop ();
+			this.stop();
 	}
 
 	getCaptchaToken() {
-		this.checkForTimeout ();
-		if (this.stopped == true)
+		this.checkForTimeout();
+		if (this.stopped === true)
 			return;
 
 		const startTimestampMs = Date.now();
-		this.solver.solveCaptcha('https://www.supremenewyork.com/checkout', '6LeWwRkUAAAAAOBsau7KpuC9AV-6J8mhw4AjC3Xz', (captchaToken) => {
+		this.solver.solveCaptcha('https://www.supremenewyork.com/checkout', '6LeWwRkUAAAAAOBsau7KpuC9AV-6J8mhw4AjC3Xz', captchaToken => {
 			console.log("New captcha token: " + captchaToken);
 			this.captchaToken = captchaToken;
 			const endTimestampMS = Date.now();
@@ -89,7 +87,7 @@ class SupremeWorker {
 	}
 
 	checkForProduct() {
-		if (this.stopped == true)
+		if (this.stopped === true)
 			return;
 
 		supremeMobile.findItem(this.productDefinition.category, this.productDefinition.keywords, product => {
@@ -106,7 +104,11 @@ class SupremeWorker {
 	}
 
 	buyProduct(product, availableStyles) {
-		this.buyApi.buyProduct(product, availableStyles, this.prefs, isTesting, () => this.finishWork(), () => this.checkForProduct());
+		this.buyApi.buyProduct(product,
+			availableStyles,
+			this.prefs, isTesting,
+			() => this.finishWork(),
+			() => this.checkForProduct());
 	}
 
 	finishWork() {
@@ -114,47 +116,47 @@ class SupremeWorker {
 		this.callback();
 	}
 
-	getAvailableStyles (product) {
-		this.productDefinition.styles = this.productDefinition.styles.map (style => style.toLowerCase());
-		this.productDefinition.sizes = this.productDefinition.sizes.map (style => style.toLowerCase());
-		return product.styles.map( style => {
-			const sizes = style.sizes.filter ( size => {
+	getAvailableStyles(product) {
+		this.productDefinition.styles = this.productDefinition.styles.map(style => style.toLowerCase());
+		this.productDefinition.sizes = this.productDefinition.sizes.map(style => style.toLowerCase());
+		return product.styles.map(style => {
+			const sizes = style.sizes.filter(size => {
 				return this.productDefinition.sizes.includes(this.formatStyle(size.name)) && size.stock_level == 1;
-			}).map ( size => size.id+"");
+			}).map(size => size.id + "");
 			return {
-				name:this.formatStyle(style.name),
-				id: style.id+"",
+				name: this.formatStyle(style.name),
+				id: style.id + "",
 				sizes: sizes
 			}
-		}).filter( style => style.sizes.length > 0)
-		.filter (style => this.productDefinition.styles.includes(style.name));
+		}).filter(style => style.sizes.length > 0)
+			.filter(style => this.productDefinition.styles.includes(style.name));
 	}
 
-	formatStyle (string) {
+	formatStyle(string) {
 		string = encodeURI(string);
 		string = string.replace(/%EF%BB%BF/g, "");
 		return decodeURI(string).toLowerCase();
 	}
 
 	stop() {
-		this.buyApi.stop ();
+		this.buyApi.stop();
 		this.stopped = true;
 	}
 }
 
-function waitForDrop () {
+function waitForDrop() {
 	const date = new Date();
-	if (date.getDay() == 4 && 
-		date.getUTCHours() == 10 &&
+	if (date.getDay() === 4 &&
+		date.getUTCHours() === 10 &&
 		date.getMinutes() > 57) {
 		console.log("Drop will be soon! Bot starts to prepare!")
-		startDrop (() => waitForDrop());
+		startDrop(() => waitForDrop());
 	} else {
-		setTimeout(() => waitForDrop (), 10000);
+		setTimeout(() => waitForDrop(), 10000);
 	}
 }
 
 if (isTesting)
-	startDrop (()=> process.exit());
+	startDrop(() => process.exit());
 else
-	waitForDrop ();
+	waitForDrop();
