@@ -4,7 +4,7 @@ function CaptchaSolver(key) {
 
   this.solveCaptcha = function (url, websiteKey, callback, isTest) {
     if (isTest)
-      return setTimeout(() => callback('123456'), 5* 1000);
+      return setTimeout(() => callback('123456'), 1* 1000);
 
     anticaptcha.setWebsiteURL(url);
     anticaptcha.setWebsiteKey(websiteKey);

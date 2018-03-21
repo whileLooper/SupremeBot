@@ -2,20 +2,31 @@ const puppeteer = require('puppeteer');
 
 class BuyOnMobile {
 
-    async buyProduct(product, sizeId, prefs, isTesting, finishCallback, retryCallback) {
-        var args = {args: ['--no-sandbox']};
+    async buyProduct(product, styles, prefs, isTesting, finishCallback, retryCallback) {
+        var args = { args: ['--no-sandbox'] };
         isTesting ? args.headless = false : args.headless = true;
         var browser = await puppeteer.launch(args);
         try {
-
             const page = await browser.newPage();
-            await page.goto(product.link);
+            const style = styles[0];
+            await page.goto('https://www.supremenewyork.com/mobile#products/'+ product.id +'/'+ style.id);
+
+            await page.waitFor(1 * 1000);
 
             const SIZE_SELECTOR = "#size-options";
-            await page.select(SIZE_SELECTOR, sizeId.toString());
+            const sizeInput = await page.$(SIZE_SELECTOR);
+            if (sizeInput) {
+                const SIZE_OPTION_SELECTOR = "#size-options > option";
+                const choosenSize = await page.$$eval(SIZE_OPTION_SELECTOR, (elems, style) => {
+                    return style.sizes.find(size => {
+                        return elems.map(elem => elem.value).includes(size);
+                    });
+                }, style);
+                await page.$eval(SIZE_SELECTOR, (el, size) => el.value = size, choosenSize);
+            }
 
-            const ADD_PRODUCT_SELECTOR = '#cart-update>cart-button';
-            const SOLD_OUT_SELECTOR_SELECTOR = '#cart-update>.cart-button.sold-out';
+            const ADD_PRODUCT_SELECTOR = '#cart-update > .cart-button';
+            const SOLD_OUT_SELECTOR_SELECTOR = '#cart-update > .cart-button.sold-out';
             const soldOutButton = await page.$(SOLD_OUT_SELECTOR_SELECTOR);
             if (soldOutButton) {
                 await browser.close();
@@ -32,10 +43,11 @@ class BuyOnMobile {
 
             await page.waitFor(1 * 1000);
 
+            const MAIN_SELECTOR = '#main';
             const NAME_SELECTOR = '#order_billing_name';
             const EMAIL_SELECTOR = '#order_email';
             const TEL_SELECTOR = '#order_tel';
-            const ADRESS_SELECTOR = '#order_billing_adress';
+            const ADRESS_SELECTOR = '#order_billing_address';
             const CITY_SELECTOR = '#order_billing_city';
             const ZIP_SELECTOR = '#order_billing_zip';
             const COUNTRY_SELECTOR = '#order_billing_country';
@@ -46,6 +58,7 @@ class BuyOnMobile {
             const CARD_VVAL_SELECTOR = '#credit_card_cvv';
             const TERMS_SELECTOR = '#order_terms'
 
+            await page.$eval(MAIN_SELECTOR, el => el.style = "");
             await page.$eval(NAME_SELECTOR, (el, value) => el.value = value, prefs.name);
             await page.$eval(EMAIL_SELECTOR, (el, value) => el.value = value, prefs.email);
             await page.$eval(TEL_SELECTOR, (el, value) => el.value = value, prefs.tel);
@@ -72,15 +85,15 @@ class BuyOnMobile {
             console.log(e);
             try {
                 browser.close();
-            } catch (expection) {}
+            } catch (expection) { }
             retryCallback();
         }
     }
 
-    stop () {
+    stop() {
         try {
             browser.close();
-        } catch (expection) {}
+        } catch (expection) { }
     }
 }
 

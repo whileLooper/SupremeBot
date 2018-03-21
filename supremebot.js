@@ -1,10 +1,11 @@
 var supreme = require('./supreme-api/supremeapi');
+var supremeMobile = require('./supreme-api/suprememobileapi');
 var async = require('async');
 var fs = require('fs');
 var jsonfile = require('jsonfile');
 var captchaSolver = require('./captchasolver');
-var buyProductPuppeteer = require('./buyProductPuppeteer');
-const WORKER_COUNT = 5;
+var buyOnMobile = require('./buyOnMobile');
+const WORKER_COUNT = 1;
 const WORKER_TIMEOUT_MS = 1000* 60 * 12;
 var workers = [];
 var isTesting = process.argv [2] == "testing"
@@ -49,7 +50,7 @@ class SupremeWorker {
 	constructor(prefs, solver) {
 		this.prefs = prefs;
 		this.solver = solver;
-		this.buyApi = new buyProductPuppeteer.BuyProductPuppeteer();
+		this.buyApi = new buyOnMobile.BuyOnMobile();
 		this.startTimestampMS = Date().now;
 		this.getCaptchaToken();
 	}
@@ -91,11 +92,11 @@ class SupremeWorker {
 		if (this.stopped == true)
 			return;
 
-		supreme.seek(this.productDefinition.category, this.productDefinition.keywords, this.productDefinition.style, (product, err) => {
+		supremeMobile.findItem(this.productDefinition.category, this.productDefinition.keywords, product => {
 			if (product && this.captchaToken) {
-				const sizeId = product.availability != "Sold Out" ? this.chooseSize(product) : null;
-				if (sizeId)
-					this.buyProduct(product, sizeId);
+				const availableStyles = this.getAvailableStyles(product);
+				if (availableStyles.length > 0)
+					this.buyProduct(product, availableStyles);
 				else
 					this.finishWork();
 			} else {
@@ -104,22 +105,35 @@ class SupremeWorker {
 		});
 	}
 
-	chooseSize(product) {
-		const sizeName = this.productDefinition.sizes.find(size => {
-			return product.sizesAvailable.find(sizeObject => {
-				return sizeObject.size == size;
-			});
-		});
-		return sizeName ? product.sizesAvailable.find(sizeObject => sizeObject.size == sizeName).id : null;
-	}
-
-	buyProduct(product, sizeId) {
-		this.buyApi.buyProduct(product, sizeId, this.prefs, isTesting, () => this.finishWork(), () => this.checkForProduct());
+	buyProduct(product, availableStyles) {
+		this.buyApi.buyProduct(product, availableStyles, this.prefs, isTesting, () => this.finishWork(), () => this.checkForProduct());
 	}
 
 	finishWork() {
 		this.productDefinition = null;
 		this.callback();
+	}
+
+	getAvailableStyles (product) {
+		this.productDefinition.styles = this.productDefinition.styles.map (style => style.toLowerCase());
+		this.productDefinition.sizes = this.productDefinition.sizes.map (style => style.toLowerCase());
+		return product.styles.map( style => {
+			const sizes = style.sizes.filter ( size => {
+				return this.productDefinition.sizes.includes(this.formatStyle(size.name)) && size.stock_level == 1;
+			}).map ( size => size.id+"");
+			return {
+				name:this.formatStyle(style.name),
+				id: style.id+"",
+				sizes: sizes
+			}
+		}).filter( style => style.sizes.length > 0)
+		.filter (style => this.productDefinition.styles.includes(style.name));
+	}
+
+	formatStyle (string) {
+		string = encodeURI(string);
+		string = string.replace(/%EF%BB%BF/g, "");
+		return decodeURI(string).toLowerCase();
 	}
 
 	stop() {
