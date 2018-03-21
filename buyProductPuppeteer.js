@@ -23,12 +23,12 @@ class BuyProductPuppeteer {
 
             await page.click(ADD_PRODUCT_SELECTOR);
 
-            await page.waitFor(1 * 1000);
+            await page.waitFor(1000);
 
             const CHECKOUT_SELECTOR = '#cart .checkout';
             await page.click(CHECKOUT_SELECTOR);
 
-            await page.waitFor(1 * 1000);
+            await page.waitFor(1000);
 
             const NAME_SELECTOR = '#order_billing_name';
             const EMAIL_SELECTOR = '#order_email';

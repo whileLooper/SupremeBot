@@ -2,14 +2,14 @@ const puppeteer = require('puppeteer');
 
 class BuyOnMobile {
 
-    async buyProduct(product, styles, prefs, isTesting, finishCallback, retryCallback) {
-        var args = { args: ['--no-sandbox'] };
+    async buyProduct(product, styles, prefs, captchaToken, isTesting, finishCallback, retryCallback) {
+        var args = {args: ['--no-sandbox']};
         isTesting ? args.headless = false : args.headless = true;
         var browser = await puppeteer.launch(args);
         try {
             const page = await browser.newPage();
             const style = styles[0];
-            await page.goto('https://www.supremenewyork.com/mobile#products/'+ product.id +'/'+ style.id);
+            await page.goto('https://www.supremenewyork.com/mobile#products/' + product.id + '/' + style.id);
 
             const ADD_PRODUCT_SELECTOR = '#cart-update > .cart-button';
             //this selector should always be there because it applies on the sold out button too
@@ -74,6 +74,14 @@ class BuyOnMobile {
             await page.$eval(CARD_YEAR_SELECTOR, (el, value) => el.value = value, prefs.cardYear);
             await page.$eval(CARD_VVAL_SELECTOR, (el, value) => el.value = value, prefs.cardVval);
 
+            const RECAPTCHA_RESPONSE_SELECTOR = '#g-recaptcha-response';
+            const htmlElement = htmlToElement("<textarea id=\"g-recaptcha-response\" name=\"g-recaptcha-response\" " +
+                "class=\"g-recaptcha-response\" style=\"width: 250px; height: 40px;\"></textarea>");
+            await page.evaluate((htmlElement) => {
+                document.querySelector("#g-recaptcha").appendChild(htmlElement);
+            }, htmlElement);
+            await page.$eval(RECAPTCHA_RESPONSE_SELECTOR, (el, value) => el.value = value, captchaToken);
+
             // await page.evaluate('checkoutAfterCaptcha();');
 
             // await page.click(TERMS_SELECTOR);
@@ -87,7 +95,8 @@ class BuyOnMobile {
             console.log(e);
             try {
                 browser.close();
-            } catch (expection) { }
+            } catch (expection) {
+            }
             retryCallback();
         }
     }
@@ -95,8 +104,16 @@ class BuyOnMobile {
     stop() {
         try {
             browser.close();
-        } catch (expection) { }
+        } catch (expection) {
+        }
     }
+}
+
+function htmlToElement(html) {
+    var template = document.createElement('template');
+    html = html.trim(); // Never return a text node of whitespace as the result
+    template.innerHTML = html;
+    return template.content.firstChild;
 }
 
 exports.BuyOnMobile = BuyOnMobile;
