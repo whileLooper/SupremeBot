@@ -37,11 +37,11 @@ class BuyOnMobile {
             await page.click(ADD_PRODUCT_SELECTOR);
 
             const CHECKOUT_SELECTOR = '#checkout-now';
+            
             await page.waitFor(1 * 250);
 
             await page.click(CHECKOUT_SELECTOR);
 
-            await page.waitFor(1 * 250);
 
             const MAIN_SELECTOR = '#main';
             const NAME_SELECTOR = '#order_billing_name';
@@ -57,6 +57,8 @@ class BuyOnMobile {
             const CARD_YEAR_SELECTOR = '#credit_card_year';
             const CARD_VVAL_SELECTOR = '#credit_card_cvv';
             const TERMS_SELECTOR = '#order_terms'
+
+            await page.waitForSelector(NAME_SELECTOR);
 
             await page.$eval(MAIN_SELECTOR, el => el.style = "");
             await page.$eval(NAME_SELECTOR, (el, value) => el.value = value, prefs.name);
