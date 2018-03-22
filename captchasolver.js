@@ -26,12 +26,12 @@ function CaptchaSolver(key) {
           console.log("Captcha Task started:"+ taskId, new Date());
 
           anticaptcha.getTaskSolution(taskId, function (err, taskSolution) {
-            if (err) {
+            if (err || !taskSolution) {
               console.error(err);
-              return;
+              return callback (null);
             }
 
-            console.log("Captcha Token Received: "+taskSolution, new Date());
+            console.log("Captcha Token Received: "+taskSolution.substring(0, taskSolution.length < 10? taskSolution.length:10)+" for task "+taskId, new Date());
             callback(taskSolution);
           });
         });

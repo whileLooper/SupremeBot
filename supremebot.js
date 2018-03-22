@@ -4,7 +4,7 @@ var jsonfile = require('jsonfile');
 var captchaSolver = require('./captchasolver');
 var buyOnMobile = require('./buyOnMobile');
 const WORKER_COUNT = 2;
-const WORKER_TIMEOUT_MS = 1000 * 60 * 2;
+const WORKER_TIMEOUT_MS = 1000 * 60 * 10;
 var workers = [];
 var isTesting = process.argv.length > 2 ? process.argv[2] === 'testing' : false;
 
@@ -15,6 +15,9 @@ function intializeWorkers(prefs, captchaPool) {
 }
 
 function assignToWorker(productDefinition, callback) {
+	if (workers.length == 0)
+		return callback();
+
 	var isAssigned = workers.some(worker => {
 		if (!worker.hasWork()) {
 			worker.assignProduct(productDefinition, callback);
@@ -40,6 +43,7 @@ function startDrop(mainCallback) {
 	}, (err) => {
 		workers.map(worker => worker.stop());
 		workers = [];
+		captchaPool.stop ();
 		mainCallback();
 	});
 }
@@ -89,6 +93,7 @@ class SupremeWorker {
 		this.captchaPool = captchaPool;
 		this.buyApi = new buyOnMobile.BuyOnMobile();
 		this.startTimestampMS = Date.now();
+		console.log("Worker has stared");
 	}
 
 	hasWork() {
@@ -96,6 +101,7 @@ class SupremeWorker {
 	}
 
 	assignProduct(productDefinition, callback) {
+		console.log("Worker has product assigned:",productDefinition.name);
 		this.callback = callback;
 		this.productDefinition = productDefinition;
 		this.checkForProduct();
@@ -116,7 +122,7 @@ class SupremeWorker {
 			const startTime = new Date();
 			if (product && this.getCaptcha()) {
 				const availableStyles = this.getAvailableStyles(product);
-				console.log(availableStyles);
+				console.log("Available Styles: ",availableStyles);
 				if (availableStyles.length > 0) {
 					console.log("Start Time: " + startTime);
 					this.buyProduct(product, availableStyles);
@@ -174,6 +180,7 @@ class SupremeWorker {
 	}
 
 	stop() {
+		console.log("Worker has stopped!")
 		this.buyApi.stop();
 		this.stopped = true;
 	}
