@@ -3,8 +3,9 @@ var async = require('async');
 var jsonfile = require('jsonfile');
 var captchaSolver = require('./captchasolver');
 var buyOnMobile = require('./buyOnMobile');
+const START_TIME = {day: 4, hour:10, minute:57};
 const WORKER_COUNT = 2;
-const WORKER_TIMEOUT_MS = 1000 * 60 * 10;
+const TIMEOUT_MS = 1000 * 60 * 10; // Beachte dass die zeit schon vor dem drop laeuft
 var workers = [];
 var isTesting = process.argv.length > 2 ? process.argv[2] === 'testing' : false;
 
@@ -14,9 +15,11 @@ function intializeWorkers(prefs, captchaPool) {
 		workers.push(new SupremeWorker(prefs, captchaPool));
 }
 
-function assignToWorker(productDefinition, callback) {
-	if (workers.length == 0)
+function assignToWorker(startTime ,productDefinition, callback) {
+	if (checkForTimeout(startTime)) {
+		console.log("Product is timed out", productDefinition.keywords, new Date());
 		return callback();
+	}
 
 	var isAssigned = workers.some(worker => {
 		if (!worker.hasWork()) {
@@ -26,8 +29,8 @@ function assignToWorker(productDefinition, callback) {
 			return false;
 		}
 	});
-	if (!isAssigned) {
-		setTimeout(() => assignToWorker(productDefinition, callback), 1000);
+	if (!isAssigned ) {
+		setTimeout(() => assignToWorker(startTime, productDefinition, callback), 1000);
 	}
 }
 
@@ -39,7 +42,8 @@ function startDrop(mainCallback) {
 	intializeWorkers(prefs, captchaPool);
 
 	async.each(droplist, (itemDefinition, callback) => {
-		assignToWorker(itemDefinition, callback);
+		console.log("product waits for assignment ", itemDefinition);
+		assignToWorker(Date.now(),itemDefinition, callback);
 	}, (err) => {
 		workers.map(worker => worker.stop());
 		workers = [];
@@ -93,7 +97,7 @@ class SupremeWorker {
 		this.captchaPool = captchaPool;
 		this.buyApi = new buyOnMobile.BuyOnMobile();
 		this.startTimestampMS = Date.now();
-		console.log("Worker has stared");
+		console.log("Worker has started");
 	}
 
 	hasWork() {
@@ -101,20 +105,13 @@ class SupremeWorker {
 	}
 
 	assignProduct(productDefinition, callback) {
-		console.log("Worker has product assigned:",productDefinition.name);
+		console.log("Worker has product assigned:", productDefinition.keywords, new Date());
 		this.callback = callback;
 		this.productDefinition = productDefinition;
 		this.checkForProduct();
 	}
 
-	checkForTimeout() {
-		const differenceMS = Date.now() - this.startTimestampMS;
-		if (differenceMS > WORKER_TIMEOUT_MS)
-			this.stop();
-	}
-
 	checkForProduct() {
-		this.checkForTimeout();
 		if (this.stopped === true)
 			return;
 
@@ -154,6 +151,7 @@ class SupremeWorker {
 	}
 
 	finishWork(hasUsedCaptcha) {
+		console.log("Worker has "+this.productDefinition.keywords+" has fully processed!", new Date());
 		this.captcha = hasUsedCaptcha ? null : this.captcha;
 		this.productDefinition = null;
 		this.callback();
@@ -188,14 +186,20 @@ class SupremeWorker {
 
 function waitForDrop() {
 	const date = new Date();
-	if (date.getDay() === 4 &&
-		date.getUTCHours() === 10 &&
-		date.getMinutes() > 57) {
+	if (date.getDay() === START_TIME.day &&
+		date.getUTCHours() === START_TIME.hour &&
+		date.getMinutes() > START_TIME.minute) {
 		console.log("Drop will be soon! Bot starts to prepare!")
 		startDrop(() => waitForDrop());
 	} else {
 		setTimeout(() => waitForDrop(), 10000);
 	}
+}
+
+function checkForTimeout(startTime) {
+	const differenceMS = Date.now() - this.startTime;
+	if (differenceMS > TIMEOUT_MS)
+		this.stop();
 }
 
 function formatStyle(string) {
