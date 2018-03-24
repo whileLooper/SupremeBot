@@ -12,11 +12,11 @@
 }
 
 .button-right:hover {
-    background: linear-gradient(to right, rgba(255,0,0,0), rgba(0,100,255,0.5)); 
+    background: linear-gradient(to right, rgba(255,0,0,0), rgba(0,0,0,0.2)); 
 }
 
 .button-left:hover {
-    background: linear-gradient(to left, rgba(255,0,0,0), rgba(0,100,255,0.5)); 
+    background: linear-gradient(to left, rgba(255,0,0,0), rgba(0,0,0,0.2)); 
 }
 
 .button-side {
@@ -30,6 +30,7 @@
     -moz-appearance: none;
     outline: none;
     border: 0;
+    border-radius: 5%;
 }
 
 .arrow {

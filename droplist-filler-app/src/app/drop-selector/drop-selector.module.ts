@@ -7,12 +7,14 @@ import { DropSelectorComponent } from './drop-selector.component';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import { ProductItemComponent } from './drop-choice/product-item/product-item.component';
 import { DropSelectorService } from './drop-selector.service';
+import { MatCardModule } from '@angular/material';
 
 @NgModule({
   imports: [
     CommonModule,
     FlexLayoutModule,
-    CarouselModule
+    CarouselModule,
+    MatCardModule
   ],
   declarations: [DropListComponent, DropChoiceComponent, DropSelectorComponent, ProductItemComponent],
   exports: [DropSelectorComponent],

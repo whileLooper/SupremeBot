@@ -1,1 +1,9 @@
-<app-carousel [images]="product.images"></app-carousel>
+<mat-card>
+  <mat-card-title fxLayout="row">
+    <div class="header" fxFlex="1 1 auto">{{product.name}}</div>
+    <div class="header" fxFlex="0 0 auto">{{product.price}}</div>
+  </mat-card-title>
+  <mat-card-content>
+    <app-carousel [images]="product.images"></app-carousel>
+  </mat-card-content>
+</mat-card>
