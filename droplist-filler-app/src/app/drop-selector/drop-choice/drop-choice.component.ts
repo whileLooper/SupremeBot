@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
+import { Component, OnInit, Input } from '@angular/core';
+import { Product } from '../drop-selector.model';
 
 @Component({
   selector: 'app-drop-choice',
@@ -8,6 +10,8 @@ import { Component, OnInit } from '@angular/core';
 export class DropChoiceComponent implements OnInit {
 
   constructor() { }
+
+  @Input() products$:Observable<Product>;
 
   ngOnInit() {
   }

@@ -1,0 +1,59 @@
+.image {
+    width: 100%;
+    height:100%;
+    background-repeat: no-repeat;
+	background-position: center; 
+    background-size: contain;
+    position: relative;
+}
+
+.button-right {
+    right:0;
+}
+
+.button-right:hover {
+    background: linear-gradient(to right, rgba(255,0,0,0), rgba(0,100,255,0.5)); 
+}
+
+.button-left:hover {
+    background: linear-gradient(to left, rgba(255,0,0,0), rgba(0,100,255,0.5)); 
+}
+
+.button-side {
+    background:transparent;
+	position: absolute;
+    top:0;
+    bottom:0;
+	width: 25%;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    outline: none;
+    border: 0;
+}
+
+.arrow {
+    transform: translateY(-50%);
+	-ms-transform: translateY(-50%);
+	-moz-transform: translateY(-50%);
+	-webkit-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+
+    transform: translateX(-100%);
+	-ms-transform: translateX(-100%);
+	-moz-transform: translateX(-100%);
+	-webkit-transform: translateX(-100%);
+    -o-transform: translateX(-100%);
+}
+
+.material-icons.md-80 {
+    font-size: 80px;
+}
+
+.button-side:hover .arrow {
+	color: #3af;
+}
+
+.button-side:active .arrow {
+	color: #04c;
+}
