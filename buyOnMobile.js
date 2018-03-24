@@ -10,7 +10,7 @@ class BuyOnMobile {
     }
 
     async buyProduct(product, styles, prefs, captchaToken, isTesting, finishCallback, retryCallback) {
-        console.log("Mid   Time: "+ new Date());
+        console.log("Mid   Time: " + new Date());
         var args = { args: ['--no-sandbox'] };
         isTesting ? args.headless = false : args.headless = true;
         var browser = await puppeteer.launch(args);
@@ -24,16 +24,15 @@ class BuyOnMobile {
             await page.waitForSelector(ADD_PRODUCT_SELECTOR);
 
             const SIZE_SELECTOR = "#size-options";
-            const sizeInput = await page.$(SIZE_SELECTOR);
-            if (sizeInput) {
-                const SIZE_OPTION_SELECTOR = "#size-options > option";
-                const choosenSize = await page.$$eval(SIZE_OPTION_SELECTOR, (elems, style) => {
-                    return style.sizes.find(size => {
-                        return elems.map(elem => elem.value).includes(size);
-                    });
-                }, style);
+            const SIZE_OPTION_SELECTOR = "#size-options > option";
+
+            const choosenSize = await page.$$eval(SIZE_OPTION_SELECTOR, (elems, style) => {
+                return style.sizes.find(size =>
+                    elems.map(elem => elem.value).includes(size));
+            }, style);
+            if (choosenSize)
                 page.select(SIZE_SELECTOR, choosenSize);
-            }
+
 
             const SOLD_OUT_SELECTOR_SELECTOR = '#cart-update > .cart-button.sold-out';
             const soldOutButton = await page.$(SOLD_OUT_SELECTOR_SELECTOR);
@@ -83,7 +82,7 @@ class BuyOnMobile {
             await page.evaluate(function (func) {
                 let template = document.createElement('template');
                 let html = "<textarea id=\"g-recaptcha-response\" name=\"g-recaptcha-response\" " +
-                "class=\"g-recaptcha-response\" style=\"width: 250px; height: 40px;\"></textarea>";
+                    "class=\"g-recaptcha-response\" style=\"width: 250px; height: 40px;\"></textarea>";
                 html = html.trim();
                 template.innerHTML = html;
                 const htmlElement = template.content.firstChild;
@@ -91,27 +90,33 @@ class BuyOnMobile {
             }, this.htmlToElement);
             await page.$eval(RECAPTCHA_RESPONSE_SELECTOR, (el, value) => el.value = value, captchaToken);
 
-            await page.click(TERMS_SELECTOR);
+            if (!isTesting) {
+                await page.click(TERMS_SELECTOR);
 
-            await page.waitFor(750);
+                await page.waitFor(750);
 
-            const SUBMIT_BUTTON_SELECTOR = "#submit_button";
-            await page.click(SUBMIT_BUTTON_SELECTOR);
+                const SUBMIT_BUTTON_SELECTOR = "#submit_button";
+                await page.click(SUBMIT_BUTTON_SELECTOR);
 
-            console.log("End   Time: "+new Date());
+                console.log("End   Time: " + new Date());
 
-            page.on('response', response => {
-				const reqUrl = response.request().url(); 
-				if (reqUrl === 'https://www.supremenewyork.com/checkout.json'){
-					response.text().then(body => {
-                        console.log(body);
-                        browser.close();
-                        finishCallback(true);
-					}).catch (err => {
-						browser.close();
-					});
-				}
-			});
+                page.on('response', response => {
+                    const reqUrl = response.request().url();
+                    if (reqUrl === 'https://www.supremenewyork.com/checkout.json') {
+                        response.text().then(body => {
+                            console.log(body);
+                            browser.close();
+                            finishCallback(true);
+                        }).catch(err => {
+                            browser.close();
+                        });
+                    }
+                });
+            } else {
+                await page.waitFor(10000);
+                await browser.close();
+                finishCallback(true);
+            }
         } catch (e) {
             console.log(e);
             try {
