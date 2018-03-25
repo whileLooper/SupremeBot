@@ -1,4 +1,4 @@
-<div fxLayout="row wrap" fxLayoutGap="20px">
-  <app-product-item fxFlex="0 0 300px" *ngFor="let product of (products$ | async); let x = index" [product]="product" dnd-draggable
-    [dragEnabled]="true" [dragData]="product" [dropZones]="['droplist']"></app-product-item>
+<div fxLayout="row wrap" fxLayoutGap="20px" [dragula]="'first-bag'" [dragulaModel]="(products$ | async)" id="choice-bag">
+  <app-product-item fxFlex="0 0 300px" *ngFor="let product of (products$ | async); let x = index" [product]="product">
+  </app-product-item>
 </div>

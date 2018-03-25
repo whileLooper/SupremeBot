@@ -1,5 +1,4 @@
-<div fxLayout="column" fxLayoutGap="20px" dnd-sortable-container [sortableData]="(droplist$|async)" [dropZones]="['droplist']">
-  <app-product-item fxFlex="0 0 auto" *ngFor="let product of (droplist$ | async); let x = index" [product]="product" dnd-sortable
-    [sortableIndex]="x" [dragEnabled]="true" [dragData]="product">
+<div fxLayout="column" fxLayoutGap="20px" [dragula]="'first-bag'" [dragulaModel]='(droplist$ | async)' id="drop-bag">
+  <app-product-item fxFlex="0 0 auto" *ngFor="let product of (droplist$ | async); let x = index" [product]="product">
   </app-product-item>
 </div>

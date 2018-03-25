@@ -1,3 +1,4 @@
+import { DragulaModule } from 'ng2-dragula';
 import { CarouselModule } from './../components/carousel/carousel.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -18,7 +19,7 @@ import {DndModule} from 'ng2-dnd';
     CarouselModule,
     MatCardModule,
     RatingBarModule,
-    DndModule.forRoot()
+    DragulaModule
   ],
   declarations: [DropListComponent, DropChoiceComponent, DropSelectorComponent, ProductItemComponent],
   exports: [DropSelectorComponent],

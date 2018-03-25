@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Product } from '../drop-selector.model';
+import { DragulaService } from 'ng2-dragula';
 
 @Component({
   selector: 'app-drop-list',
