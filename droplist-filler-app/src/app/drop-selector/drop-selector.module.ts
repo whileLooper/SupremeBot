@@ -9,6 +9,7 @@ import { ProductItemComponent } from './drop-choice/product-item/product-item.co
 import { DropSelectorService } from './drop-selector.service';
 import { MatCardModule } from '@angular/material';
 import { RatingBarModule } from '../components/rating-bar/rating-bar.module';
+import {DndModule} from 'ng2-dnd';
 
 @NgModule({
   imports: [
@@ -16,7 +17,8 @@ import { RatingBarModule } from '../components/rating-bar/rating-bar.module';
     FlexLayoutModule,
     CarouselModule,
     MatCardModule,
-    RatingBarModule
+    RatingBarModule,
+    DndModule.forRoot()
   ],
   declarations: [DropListComponent, DropChoiceComponent, DropSelectorComponent, ProductItemComponent],
   exports: [DropSelectorComponent],

@@ -1,3 +1,5 @@
-<p>
-  drop-list works!
-</p>
+<div fxLayout="column" fxLayoutGap="20px" dnd-sortable-container [sortableData]="(droplist$|async)" [dropZones]="['source-dropZone']">
+  <app-product-item fxFlex="0 0 auto" *ngFor="let product of (droplist$ | async); let x = index" [product]="product" dnd-sortable
+    [sortableIndex]="x" [dragEnabled]="true" [dragData]="product">
+  </app-product-item>
+</div>

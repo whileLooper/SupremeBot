@@ -13,9 +13,11 @@ export class DropSelectorComponent implements OnInit {
   constructor(private dropSelectorService: DropSelectorService) { }
 
   products$: Observable<Product[]>
+  droplist$: Observable<Product[]>
 
   ngOnInit() {
     this.products$ = this.dropSelectorService.getAllProducts ();
+    this.droplist$ = this.dropSelectorService.getDroplist ();
   }
 
 }

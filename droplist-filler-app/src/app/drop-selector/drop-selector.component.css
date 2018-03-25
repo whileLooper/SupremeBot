@@ -1,0 +1,13 @@
+app-drop-list {
+    outline: 5px dashed #808;
+    outline-offset: 5px;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+app-drop-list.sticky {
+    position: sticky;
+    overflow-y: auto;
+    top: 0px;
+    height: 100vh;
+}

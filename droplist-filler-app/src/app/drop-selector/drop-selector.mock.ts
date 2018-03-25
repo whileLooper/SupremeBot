@@ -44,3 +44,7 @@ export const PRODUCTS: Product[] = [
     ...PRODUCTS_PART,
     ...PRODUCTS_PART
 ]
+
+export const DROPLIST: Product[] = [
+    ...PRODUCTS_PART,
+]
