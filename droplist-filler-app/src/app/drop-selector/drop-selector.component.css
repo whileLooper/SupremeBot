@@ -3,6 +3,7 @@ app-drop-list {
     outline-offset: 5px;
     margin-right: 10px;
     margin-left: 10px;
+    margin-bottom:20px;
 }
 
 app-drop-list.sticky {

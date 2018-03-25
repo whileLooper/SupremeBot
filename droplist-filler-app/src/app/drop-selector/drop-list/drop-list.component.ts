@@ -9,9 +9,7 @@ import { Product } from '../drop-selector.model';
 })
 export class DropListComponent implements OnInit {
 
-  constructor() { }
-
-  @Input() droplist$:Observable<Product>;
+  @Input() droplist$: Observable<Product[]>;
 
   ngOnInit() {
   }
