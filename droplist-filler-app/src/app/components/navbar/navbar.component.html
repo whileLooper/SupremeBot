@@ -1,0 +1,19 @@
+<mat-toolbar color="primary">
+
+  <button mat-button [routerLink]="homeLink" class="title">
+    <mat-icon>home</mat-icon>
+    {{title}}
+  </button>
+
+  <span class="fill-remaining-space"></span>
+  <div fxLayout="row" fxShow="false" fxShow.gt-sm>
+    <button mat-button *ngFor="let navigationItem of navigationList" [routerLink]="navigationItem.url">{{navigationItem.name}}</button>
+  </div>
+  <button mat-button [mat-menu-trigger-for]="menu" fxHide="false" fxHide.gt-sm>
+    <mat-icon>menu</mat-icon>
+  </button>
+
+</mat-toolbar>
+<mat-menu x-position="before" #menu="matMenu">
+  <button mat-button *ngFor="let navigationItem of navigationList" [routerLink]="navigationItem.url">{{navigationItem.name}}</button>
+</mat-menu>

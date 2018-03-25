@@ -1,11 +1,9 @@
 <div class="container">
-	<p class="h3">Login</p>
+	<h3>Login</h3>
 	<div>
-		<div class="input-group">
-			<span class="input-group-addon btn-secondary btn-lg" >
-				<i class="fa fa-user"></i>
-			</span>
-			<input class="form-control custom-control input-lg" [(ngModel)]="username" (ngModelChange)="setUser()"  placeholder="Username"/>    
-		</div>
+		<mat-icon>person</mat-icon>
+		<mat-form-field>
+			<input matInput [(ngModel)]="username" (ngModelChange)="setUser()" placeholder="Username" />
+		</mat-form-field>
 	</div>
 </div>

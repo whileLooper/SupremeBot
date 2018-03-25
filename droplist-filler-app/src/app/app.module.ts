@@ -1,3 +1,4 @@
+import { NavbarModule } from './components/navbar/navbar.module';
 import { CarouselModule } from './components/carousel/carousel.module';
 import { DropSelectorModule } from './drop-selector/drop-selector.module';
 import { LoginModule } from './login/login.module';
@@ -7,6 +8,8 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { CarouselComponent } from './components/carousel/carousel.component';
+import { ROUTES } from './app.routes';
+import { RouterModule } from '@angular/router';
 
 
 @NgModule({
@@ -14,9 +17,11 @@ import { CarouselComponent } from './components/carousel/carousel.component';
     AppComponent
   ],
   imports: [
+    RouterModule.forRoot(ROUTES),
     BrowserModule,
     LoginModule,
-    DropSelectorModule
+    DropSelectorModule,
+    NavbarModule
   ],
   providers: [],
   bootstrap: [AppComponent]

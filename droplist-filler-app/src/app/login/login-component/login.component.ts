@@ -8,7 +8,7 @@ import { LoginService } from '../login.service';
 })
 export class LoginComponent implements OnInit {
 
-	@Input() usernameSelector:string = "";
+	usernameSelector:string = "supremeUser";
 	username = "";
 
 	constructor(private loginService:LoginService) { }

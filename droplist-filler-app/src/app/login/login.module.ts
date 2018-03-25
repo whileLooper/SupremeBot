@@ -1,3 +1,4 @@
+import { MatIconModule, MatInputModule, MatFormFieldModule } from '@angular/material';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LoginComponent } from './login-component/login.component';
@@ -9,7 +10,10 @@ import { BrowserModule } from '@angular/platform-browser';
   imports: [
     CommonModule,
     BrowserModule,
-    FormsModule
+    FormsModule,
+    MatIconModule,
+    MatInputModule,
+    MatFormFieldModule
   ],
   declarations: [LoginComponent],
   exports: [LoginComponent],

@@ -11,6 +11,8 @@ import { DragulaService } from 'ng2-dragula';
 export class DropChoiceComponent implements OnInit {
 
   constructor(private dragulaService: DragulaService) {
+    const bag: any = this.dragulaService.find('first-bag');
+    if (bag !== undefined ) this.dragulaService.destroy('first-bag');
     dragulaService.setOptions('first-bag', {
       copy: function (el, source) {
         return source.id === 'choice-bag';

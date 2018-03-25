@@ -6,5 +6,17 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'app';
+  title = 'Supreme Droplist Filler';
+  homeLink = '/'
+
+  navigationList = [
+    {
+      name: 'Droplist',
+      url: '/droplist'
+    },
+    {
+      name: 'Login',
+      url: '/login'
+    }
+  ]
 }
