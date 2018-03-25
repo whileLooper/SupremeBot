@@ -6,8 +6,15 @@
   "dependencies": {
     "anticaptcha-nodejs": "^1.0.1",
     "async": "^2.6.0",
+    "body-parser": "^1.18.2",
+    "cheerio": "^1.0.0-rc.2",
+    "compression": "^1.7.2",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.16.3",
     "jsonfile": "^4.0.0",
-    "puppeteer": "^1.2.0"
+    "puppeteer": "^1.2.0",
+    "request": "^2.85.0",
+    "request-promise": "^4.2.2"
   },
   "devDependencies": {},
   "scripts": {
