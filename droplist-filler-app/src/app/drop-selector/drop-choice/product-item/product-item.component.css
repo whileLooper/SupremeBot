@@ -11,6 +11,18 @@ mat-card-content {
     padding-top:100%;
 }
 
-.header {
+.header-bold {
     font-weight: bold;
+}
+
+.header-small {
+    position: relative;
+}
+
+.price-tag {
+    font-size:15px;
+    bottom: 0px;
+    position: absolute;
+    right: 0px;
+    margin-bottom: 5px;
 }

@@ -30,7 +30,7 @@
     -moz-appearance: none;
     outline: none;
     border: 0;
-    border-radius: 5%;
+    border-radius: 10px;
 }
 
 .arrow {
