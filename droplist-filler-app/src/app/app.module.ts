@@ -17,7 +17,7 @@ import { RouterModule } from '@angular/router';
     AppComponent
   ],
   imports: [
-    RouterModule.forRoot(ROUTES),
+    RouterModule.forRoot(ROUTES, {useHash: true}), //useHash wird gebraucht wenn ohne proxy direkt ueber node ausgeliefert wird
     BrowserModule,
     LoginModule,
     DropSelectorModule,

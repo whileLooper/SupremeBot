@@ -1,4 +1,4 @@
-const HTML = __dirname + 'droplist-filler-app/dist';
+const HTML = __dirname + '/droplist-filler-app/dist';
 const PREFS_FILE = "prefs.json";
 const PORT = 4003;
 const SUPREME_COMMUNITY_URL = "https://www.supremecommunity.com/season/spring-summer2018/droplist/2018-03-22/";
@@ -33,9 +33,11 @@ var auth = function (req, res, next) {
 		res.sendStatus(401);
 };
 
-app.get('/products', function (req, res) {
-	var trainingArray = _.values(trainings);
-	getProducts((products) => res.send(products));
+app.get('/api/products', function (req, res) {
+	getProducts((products) => {
+		console.log(products);
+		res.send(products);
+	});
 });
 
 function getProducts(callback) {
@@ -52,12 +54,14 @@ function parseProducts(htmlString) {
 	const $ = cheerio.load(htmlString);
 	var products = [];
 	$('.card').each ( function (index, element) {
+		const baseUrl = 'https://www.supremecommunity.com';
 		const newProduct = {
 			id : $(this).attr('data-itemid'),
-			imageUrl : $(this).find('img').attr('src'),
-			price : $(this).find('.label-price').text().trim(),
-			votePositive : $(this).find('.progress-bar-success').text(),
-			voteNegative : $(this).find('.progress-bar-danger').text()
+			name : $(this).find('.name.item-details').text(),
+			imageUrl : baseUrl+$(this).find('img').attr('src'),
+			price : parseInt($(this).find('.label-price').text().trim().split('/')[0]),
+			votePositive : parseInt($(this).find('.progress-bar-success').text()),
+			voteNegative : parseInt($(this).find('.progress-bar-danger').text())
 		}
 		products.push(newProduct);
 	});
@@ -65,5 +69,3 @@ function parseProducts(htmlString) {
 }
 
 username = jsonfile.readFileSync(PREFS_FILE).password;
-
-getProducts ( (value)=> console.log(value));

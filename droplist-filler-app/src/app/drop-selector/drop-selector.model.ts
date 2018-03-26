@@ -3,5 +3,5 @@ export interface Product {
     price: number,
     votePositive: number,
     voteNegative: number,
-    images: string [],
+    imageUrl:string
 }

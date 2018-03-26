@@ -1,3 +1,4 @@
+import { HttpClientModule } from '@angular/common/http';
 import { DragulaModule } from 'ng2-dragula';
 import { CarouselModule } from './../components/carousel/carousel.module';
 import { NgModule } from '@angular/core';
@@ -19,7 +20,8 @@ import {DndModule} from 'ng2-dnd';
     CarouselModule,
     MatCardModule,
     RatingBarModule,
-    DragulaModule
+    DragulaModule,
+    HttpClientModule
   ],
   declarations: [DropListComponent, DropChoiceComponent, DropSelectorComponent, ProductItemComponent],
   exports: [DropSelectorComponent],

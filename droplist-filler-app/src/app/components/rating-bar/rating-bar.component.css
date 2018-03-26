@@ -1,9 +1,9 @@
 .rating-positive {
-    background-color:#0c0;
+    background-color:#5cb85c;
 }
 
 .rating-negative {
-    background-color:#f55;
+    background-color:#d9534f;
 }
 
 .rating-negative,

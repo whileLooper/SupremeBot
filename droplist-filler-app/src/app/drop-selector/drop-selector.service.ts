@@ -4,6 +4,8 @@ import { Injectable } from '@angular/core';
 import { Product } from './drop-selector.model';
 import { Subject } from 'rxjs/Subject';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { HttpClient } from '@angular/common/http';
+import { map } from "rxjs/operators";
 
 @Injectable()
 export class DropSelectorService {
@@ -11,12 +13,19 @@ export class DropSelectorService {
   products$: ReplaySubject<Product[]>;
   droplist$: ReplaySubject<Product[]>;
 
-  constructor() {
+  constructor(private httpClient: HttpClient) {
     this.products$ = new ReplaySubject<Product[]>(1);
-    this.products$.next(PRODUCTS);
+    this.loadProducts ();
 
     this.droplist$ = new ReplaySubject<Product[]>(1);
     this.droplist$.next(DROPLIST);
+  }
+
+  loadProducts() {
+    this.httpClient.get<Product[]>('api/products')
+      .subscribe(products => {
+        console.log(products);
+        this.products$.next(products)});
   }
 
   getAllProducts(): Observable<Product[]> {
@@ -28,3 +37,8 @@ export class DropSelectorService {
   }
 
 }
+
+interface ProductResponse {
+  data: Product[];
+}
+

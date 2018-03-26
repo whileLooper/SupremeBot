@@ -1,14 +1,11 @@
 <mat-card>
   <mat-card-title fxLayout="row">
-    <div class="header-bold" fxFlex="1 1 auto">{{product.name}}</div>
-    <div class="header-small" fxFlex="0 0 auto">
-      <div class="price-tag">{{product.price}}</div>
-    </div>
+    <div class="header-bold" fxFlex="1 0 100px">{{product.name}} - {{product.price}}</div>
   </mat-card-title>
   <mat-card-subtitle>
     <app-rating-bar [ratingPositive]="product.votePositive" [ratingNegative]="product.voteNegative"></app-rating-bar>
   </mat-card-subtitle>
   <mat-card-content>
-    <app-carousel [images]="product.images"></app-carousel>
+    <app-carousel [images]="[product.imageUrl]"></app-carousel>
   </mat-card-content>
 </mat-card>

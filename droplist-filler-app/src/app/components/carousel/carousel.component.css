@@ -45,6 +45,7 @@
 	-moz-transform: translateX(-100%);
 	-webkit-transform: translateX(-100%);
     -o-transform: translateX(-100%);
+    opacity: 0;
 }
 
 .material-icons.md-80 {
@@ -52,9 +53,11 @@
 }
 
 .button-side:hover .arrow {
-	color: #3af;
+    color: #3af;
+    opacity: 1;
 }
 
 .button-side:active .arrow {
-	color: #04c;
+    color: #04c;
+    opacity: 1;
 }
