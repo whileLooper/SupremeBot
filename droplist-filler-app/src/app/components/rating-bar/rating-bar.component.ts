@@ -17,8 +17,6 @@ export class RatingBarComponent implements OnInit {
   }
 
   getNegativePercentage ():string {
-    console.log((this.ratingNegative / (this.ratingPositive + this.ratingNegative))*100 + "%");
-    console.log(this.ratingNegative,this.ratingPositive);
     return (this.ratingNegative / (this.ratingPositive + this.ratingNegative))*100 + "%";
   }
 

@@ -40,10 +40,32 @@ app.get('/api/products', function (req, res) {
 	});
 });
 
+app.get('/api/images', function (req, res) {
+	getImages(req.query.id, (images) => {
+		console.log(images);
+		res.send(images);
+	})
+});
+
+function getImages(productId, callback) {
+	const baseUrl = 'https://www.supremecommunity.com/season/itemdetails/';
+	request(baseUrl+productId)
+		.then(function (htmlString) {
+			callback(parseImages(htmlString));
+		})
+		.catch(function (err) {
+			callback(null);
+		});
+}
+
+function parseImages (htmlString) {
+	
+}
+
 function getProducts(callback) {
 	request(SUPREME_COMMUNITY_URL)
 		.then(function (htmlString) {
-			callback (parseProducts(htmlString));
+			callback(parseProducts(htmlString));
 		})
 		.catch(function (err) {
 			callback(null);
@@ -53,15 +75,15 @@ function getProducts(callback) {
 function parseProducts(htmlString) {
 	const $ = cheerio.load(htmlString);
 	var products = [];
-	$('.card').each ( function (index, element) {
+	$('.card').each(function (index, element) {
 		const baseUrl = 'https://www.supremecommunity.com';
 		const newProduct = {
-			id : $(this).attr('data-itemid'),
-			name : $(this).find('.name.item-details').text(),
-			imageUrl : baseUrl+$(this).find('img').attr('src'),
-			price : parseInt($(this).find('.label-price').text().trim().split('/')[0]),
-			votePositive : parseInt($(this).find('.progress-bar-success').text()),
-			voteNegative : parseInt($(this).find('.progress-bar-danger').text())
+			id: $(this).attr('data-itemid'),
+			name: $(this).find('.name.item-details').text(),
+			imageUrl: baseUrl + $(this).find('img').attr('src'),
+			price: parseInt($(this).find('.label-price').text().trim().split('/')[0]),
+			votePositive: parseInt($(this).find('.progress-bar-success').text()),
+			voteNegative: parseInt($(this).find('.progress-bar-danger').text())
 		}
 		products.push(newProduct);
 	});
