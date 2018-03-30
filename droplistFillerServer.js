@@ -1,5 +1,6 @@
 const HTML = __dirname + '/droplist-filler-app/dist';
 const PREFS_FILE = "prefs.json";
+const DROPLIST_FILE = "droplist.json";
 const PORT = 4003;
 const SUPREME_COMMUNITY_URL = "https://www.supremecommunity.com/season/spring-summer2018/droplist/2018-03-22/";
 
@@ -35,7 +36,6 @@ var auth = function (req, res, next) {
 
 app.get('/api/products', function (req, res) {
 	getProducts((products) => {
-		console.log(products);
 		res.send(products);
 	});
 });
@@ -46,6 +46,24 @@ app.get('/api/images', function (req, res) {
 		res.send(images);
 	})
 });
+
+app.get('/api/droplist', function (req, res) {
+	res.send(getDropList());
+});
+
+function getDropList () {
+	const droplist = jsonfile.readFileSync(DROPLIST_FILE);
+	return droplist
+}
+
+app.post('/api/droplist', function (req, res) {
+	saveInDroplist (req.body);
+	res.send({'success':true});
+});
+
+function saveInDroplist (droplist) {
+	jsonfile.writeFileSync(DROPLIST_FILE, droplist, {spaces: 4, EOL: '\n'});
+}
 
 function getImages(productId, callback) {
 	const baseUrl = 'https://www.supremecommunity.com/season/itemdetails/';

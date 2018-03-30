@@ -18,7 +18,7 @@ export class DropSelectorService {
     this.loadProducts ();
 
     this.droplist$ = new ReplaySubject<Product[]>(1);
-    this.droplist$.next(DROPLIST);
+    this.loadDroplist ();
   }
 
   loadProducts() {
@@ -28,12 +28,23 @@ export class DropSelectorService {
         this.products$.next(products)});
   }
 
+  loadDroplist() {
+    this.httpClient.get<Product[]>('api/droplist')
+      .subscribe(products => {
+        console.log(products);
+        this.droplist$.next(products)});
+  }
+
   getAllProducts(): Observable<Product[]> {
     return this.products$.asObservable();
   }
 
   getDroplist(): Observable<Product[]> {
     return this.droplist$.asObservable();
+  }
+
+  postDroplist(droplist:Product []):void {
+    this.httpClient.post<Product[]>('api/droplist', droplist).subscribe ( answer => console.log(answer));
   }
 
 }

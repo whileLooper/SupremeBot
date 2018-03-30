@@ -10,6 +10,9 @@ import { DragulaService } from 'ng2-dragula';
 })
 export class DropChoiceComponent implements OnInit {
 
+  @Input() products$:Observable<Product[]>;
+  products:Product[];
+
   constructor(private dragulaService: DragulaService) {
     const bag: any = this.dragulaService.find('first-bag');
     if (bag !== undefined ) this.dragulaService.destroy('first-bag');
@@ -24,9 +27,8 @@ export class DropChoiceComponent implements OnInit {
     });
   }
 
-  @Input() products$:Observable<Product>;
-
   ngOnInit() {
+    this.products$.subscribe (products => this.products = products);
   }
 
 }

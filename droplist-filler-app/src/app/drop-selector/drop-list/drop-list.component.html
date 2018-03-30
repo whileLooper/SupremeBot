@@ -1,4 +1,4 @@
-<div fxLayout="column" fxLayoutGap="20px" [dragula]="'first-bag'" [dragulaModel]='(droplist$ | async)' id="drop-bag">
-  <app-product-item fxFlex="0 0 auto" *ngFor="let product of (droplist$ | async); let x = index" [product]="product">
+<div fxLayout="column" fxLayoutGap="20px" [dragula]="'first-bag'" [dragulaModel]='droplist' (dragulaModel)="onDroplistChange($event)" id="drop-bag" *ngIf="droplist">
+  <app-product-item fxFlex="0 0 auto" *ngFor="let product of droplist; let x = index" [product]="product">
   </app-product-item>
 </div>
