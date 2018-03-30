@@ -123,6 +123,8 @@ class SupremeWorker {
 			const startTime = new Date();
 			if (product && this.getCaptcha()) {
 				const availableStyles = getAvailableStyles(product, this.productDefinition);
+				this.printProduct(product);
+
 				console.log("Available Styles: ", availableStyles);
 				if (availableStyles.length > 0) {
 					console.log("Start Time: " + startTime);
@@ -133,6 +135,24 @@ class SupremeWorker {
 				setTimeout(() => this.checkForProduct(), 500);
 			}
 		});
+	}
+
+	printProduct (product) {
+		console.log("Product: ", product.name);
+		if (!product.styles)
+			return console.log("product has no style property");
+
+		const styles = product.styles.map ( style => {
+			if (style.sizes) {
+				const sizes = style.sizes.map ( size => {
+					return size.name + " (" + (size.stock_level?"X":"") + ")";
+				});
+				return "Style: "+style.name+ sizes;
+			}	else {
+				return "Style: "+style.name+ "Has no Sizes!";
+			}
+		});
+		console.log(styles)
 	}
 
 	checkForTimeout() {
@@ -231,6 +251,7 @@ function checkForRestock(mainCallback) {
 				return callback();
 			}
 
+			console.log("Restock: ", productDefinition.keywords);
 			const availableStyles = getAvailableStyles(product, productDefinition);
 			IS_TESTING_RESTOCK && console.log(productDefinition.keywords, availableStyles);
 			if (availableStyles.length > 0) {
@@ -252,7 +273,7 @@ function checkForRestock(mainCallback) {
 
 function waitForDrop() {
 	const date = new Date();
-	checkForRestock(() => { });
+	// checkForRestock(() => { });
 	if (date.getDay() === START_TIME.day &&
 		date.getUTCHours() === START_TIME.hour &&
 		date.getMinutes() > START_TIME.minute) {
