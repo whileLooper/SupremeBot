@@ -12,6 +12,9 @@
     "cookie-parser": "^1.4.3",
     "express": "^4.16.3",
     "jsonfile": "^4.0.0",
+    "moment-timezone": "^0.5.14",
+    "momentjs": "^2.0.0",
+    "npm": "^5.8.0",
     "puppeteer": "^1.2.0",
     "request": "^2.85.0",
     "request-promise": "^4.2.2"

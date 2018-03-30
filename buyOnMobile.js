@@ -10,7 +10,7 @@ class BuyOnMobile {
     }
 
     async buyProduct(product, styles, prefs, captchaToken, isTesting, finishCallback, retryCallback) {
-        console.log("Mid   Time: " + new Date());
+        console.log("Mid   Time: " + new Date().toUTCString());
         var args = { args: ['--no-sandbox'] };
         args.headless = isTesting ? false : true;
         var browser = await puppeteer.launch(args);
@@ -35,7 +35,7 @@ class BuyOnMobile {
             const SOLD_OUT_SELECTOR_SELECTOR = '#cart-update > .cart-button.sold-out';
             const soldOutButton = await page.$(SOLD_OUT_SELECTOR_SELECTOR);
             if (soldOutButton || !choosenSize) {
-                console.log("Product is sold out", new Date())
+                console.log("Product is sold out", new Date().toUTCString())
                 await browser.close();
                 return finishCallback(false);
             }
@@ -100,7 +100,7 @@ class BuyOnMobile {
                 const SUBMIT_BUTTON_SELECTOR = "#submit_button";
                 await page.click(SUBMIT_BUTTON_SELECTOR);
 
-                console.log("End   Time: " + new Date());
+                console.log("End   Time: " + new Date().toUTCString());
 
                 page.on('response', response => {
                     const reqUrl = response.request().url();

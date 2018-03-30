@@ -23,7 +23,7 @@ function CaptchaSolver(key) {
             return;
           }
 
-          console.log("Captcha Task started:"+ taskId, new Date());
+          console.log("Captcha Task started:"+ taskId, new Date().toUTCString());
 
           anticaptcha.getTaskSolution(taskId, function (err, taskSolution) {
             if (err || !taskSolution) {
@@ -31,7 +31,7 @@ function CaptchaSolver(key) {
               return callback (null);
             }
 
-            console.log("Captcha Token Received: "+taskSolution.substring(0, taskSolution.length < 10? taskSolution.length:10)+" for task "+taskId, new Date());
+            console.log("Captcha Token Received: "+taskSolution.substring(0, taskSolution.length < 10? taskSolution.length:10)+" for task "+taskId, new Date().toUTCString());
             callback(taskSolution);
           });
         });
