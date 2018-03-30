@@ -43,6 +43,14 @@ export class DropSelectorService {
     return this.droplist$.asObservable();
   }
 
+  getImages(id:string, callback): void {
+    this.httpClient.get<Product[]>('api/images?id='+id)
+      .subscribe(images => {
+        console.log(images);
+        callback (images);
+      });
+  }
+
   postDroplist(droplist:Product []):void {
     this.httpClient.post<Product[]>('api/droplist', droplist).subscribe ( answer => console.log(answer));
   }

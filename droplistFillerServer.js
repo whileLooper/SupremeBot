@@ -67,6 +67,7 @@ function saveInDroplist (droplist) {
 
 function getImages(productId, callback) {
 	const baseUrl = 'https://www.supremecommunity.com/season/itemdetails/';
+	console.log(baseUrl+productId);
 	request(baseUrl+productId)
 		.then(function (htmlString) {
 			callback(parseImages(htmlString));
@@ -77,7 +78,14 @@ function getImages(productId, callback) {
 }
 
 function parseImages (htmlString) {
-	
+	const $ = cheerio.load(htmlString);
+	var images = [];
+	$('#thumbcarousel .item > div').each(function (index, element) {
+		const baseUrl = 'https://www.supremecommunity.com';
+		const url = baseUrl + $(this).attr('data-image-hq');
+		images.push(url);
+	});
+	return images;
 }
 
 function getProducts(callback) {
@@ -96,13 +104,14 @@ function parseProducts(htmlString) {
 	$('.card').each(function (index, element) {
 		const baseUrl = 'https://www.supremecommunity.com';
 		const newProduct = {
-			id: $(this).attr('data-itemid'),
+			id: $(this).find('.card-details').attr('data-itemid'),
 			name: $(this).find('.name.item-details').text(),
 			imageUrl: baseUrl + $(this).find('img').attr('src'),
-			price: parseInt($(this).find('.label-price').text().trim().split('/')[0]),
+			price: $(this).find('.label-price').text().trim().split('/')[0],
 			votePositive: parseInt($(this).find('.progress-bar-success').text()),
 			voteNegative: parseInt($(this).find('.progress-bar-danger').text())
 		}
+		console.log(newProduct);
 		products.push(newProduct);
 	});
 	return products;

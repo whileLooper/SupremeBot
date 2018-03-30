@@ -1,4 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { DropSelectorService } from './../../drop-selector.service';
+import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import { Product } from '../../drop-selector.model';
 
 @Component({
@@ -6,13 +7,25 @@ import { Product } from '../../drop-selector.model';
   templateUrl: './product-item.component.html',
   styleUrls: ['./product-item.component.css']
 })
-export class ProductItemComponent implements OnInit {
+export class ProductItemComponent implements OnInit,OnChanges {
 
-  constructor() { }
+  constructor(private dropSelectorService:DropSelectorService) { }
 
   @Input () product:Product;
+  images:string[];
+
+  ngOnChanges(changes) {
+    this.images = [this.product.imageUrl];
+  }
 
   ngOnInit() {
+    this.images = [this.product.imageUrl];
+  }
+
+  loadImages() {
+    this.dropSelectorService.getImages(this.product.id, (images => {
+     this.images = images; 
+    }));
   }
 
 }

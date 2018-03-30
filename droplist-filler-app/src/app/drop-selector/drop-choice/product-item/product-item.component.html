@@ -6,6 +6,6 @@
     <app-rating-bar [ratingPositive]="product.votePositive" [ratingNegative]="product.voteNegative"></app-rating-bar>
   </mat-card-subtitle>
   <mat-card-content>
-    <app-carousel [images]="[product.imageUrl]"></app-carousel>
+    <app-carousel [images]="images" (loadImages)="loadImages()"></app-carousel>
   </mat-card-content>
 </mat-card>
