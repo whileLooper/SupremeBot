@@ -23,6 +23,7 @@ export class DropChoiceComponent implements OnInit {
       accepts: function(el, target, source, sibling) {
         return target.id !== 'choice-bag';
       },
+      removeOnSpill: true,
       copySortSource: false,
     });
   }
