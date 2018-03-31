@@ -12,6 +12,7 @@ import { DragulaService } from 'ng2-dragula';
 export class DropListComponent implements OnInit {
 
   @Input() droplist$: Observable<Product[]>;
+  @Input() tileWidth: string;
   droplist: Product[] = [];
 
   constructor(private dropSelectorService: DropSelectorService, private dragulaService: DragulaService) {

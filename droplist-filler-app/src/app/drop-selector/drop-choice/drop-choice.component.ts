@@ -11,6 +11,7 @@ import { DragulaService } from 'ng2-dragula';
 export class DropChoiceComponent implements OnInit {
 
   @Input() products$:Observable<Product[]>;
+  @Input() tileWidth:string;
   products:Product[];
 
   constructor(private dragulaService: DragulaService) {

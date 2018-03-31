@@ -1,5 +1,5 @@
-<div fxLayout="column" fxLayoutGap="20px" [dragula]="'first-bag'" [dragulaModel]='droplist'
-  id="drop-bag" *ngIf="droplist" class="container">
+<div fxLayout="column" fxLayoutGap="10px" [dragula]="'first-bag'" [dragulaModel]='droplist'
+  id="drop-bag" *ngIf="droplist" class="container" [style.width]="tileWidth">
   <app-product-item fxFlex="0 0 auto" *ngFor="let product of droplist; let x = index" [product]="product">
   </app-product-item>
 </div>

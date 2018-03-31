@@ -4,6 +4,11 @@ app-drop-list {
     margin-right: 10px;
     margin-left: 10px;
     margin-bottom:20px;
+    margin-top: 10px;
+}
+
+app-drop-choice {
+    margin-top: 10px;
 }
 
 app-drop-list.sticky {

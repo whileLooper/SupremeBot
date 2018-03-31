@@ -1,8 +1,7 @@
 app-product-item {
-    width:300px;
+    width:auto;
 }
 
 .container {
-    min-width: 300px;
     height: 100%;
 }
