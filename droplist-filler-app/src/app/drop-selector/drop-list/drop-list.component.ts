@@ -29,10 +29,10 @@ export class DropListComponent implements OnInit {
       copySortSource: false,
     });
     dragulaService.dropModel.subscribe(value => {
-      this.onDroplistChange(this.droplist);
+      this.onDroplistChange();
     });
     dragulaService.removeModel.subscribe(value => {
-      this.onDroplistChange(this.droplist);
+      this.onDroplistChange();
     });
   }
 
@@ -40,9 +40,8 @@ export class DropListComponent implements OnInit {
     this.droplist$.subscribe (droplist => this.droplist = droplist);
   }
 
-  onDroplistChange(droplist) {
-    console.log(droplist);
-    this.dropSelectorService.postDroplist(droplist);
+  onDroplistChange() {
+    this.dropSelectorService.postDroplist(this.droplist);
   }
 
 }

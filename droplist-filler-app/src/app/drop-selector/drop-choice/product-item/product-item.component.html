@@ -1,4 +1,4 @@
-<mat-card>
+<mat-card [class.no-bottom-padding]="editable">
   <mat-card-title fxLayout="row">
     <div class="header-bold" fxFlex="1 0 100px">{{product.name}} - {{product.price}}</div>
   </mat-card-title>
@@ -8,4 +8,9 @@
   <mat-card-content>
     <app-carousel [images]="images" (loadImages)="loadImages()"></app-carousel>
   </mat-card-content>
+  <div class="edit-product" *ngIf="editable">
+    <app-chip-list [items]="product.styles" [placeholder]="'Add Style'" (onchange)="changeStyles($event)" [options]="styleOptions"></app-chip-list>
+    <mat-divider [inset]="true"></mat-divider>
+    <app-chip-list [items]="product.sizes" [placeholder]="'Add Size'" (onchange)="changeSizes($event)" [options]="sizeOptions"></app-chip-list>
+  </div>
 </mat-card>

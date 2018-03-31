@@ -46,7 +46,6 @@ export class DropSelectorService {
   getImages(id:string, callback): void {
     this.httpClient.get<Product[]>('api/images?id='+id)
       .subscribe(images => {
-        console.log(images);
         callback (images);
       });
   }

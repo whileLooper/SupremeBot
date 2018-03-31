@@ -1,0 +1,13 @@
+<mat-chip-list #chipList>
+  <mat-chip *ngFor="let item of items" [selectable]="false" [removable]="true" (remove)="remove(item)">
+    {{item}}
+    <mat-icon matChipRemove>cancel</mat-icon>
+  </mat-chip>
+  <mat-chip [selectable]="false" class="select-chip">
+    <mat-select [placeholder]="placeholder" (selectionChange)="addItem($event)" [(value)]="selected">
+      <mat-option *ngFor="let option of filteredOptions" [value]="option">
+        {{option}}
+      </mat-option>
+    </mat-select>
+  </mat-chip>
+</mat-chip-list>

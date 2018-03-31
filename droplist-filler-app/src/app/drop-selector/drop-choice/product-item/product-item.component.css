@@ -6,6 +6,14 @@ app-carousel {
     position: absolute;
 }
 
+.no-bottom-padding {
+    padding-bottom: 0px;
+}
+
+mat-card {
+    padding:10px;
+}
+
 mat-card-content {
     position: relative;
     padding-top:100%;

@@ -4,5 +4,7 @@ export interface Product {
     price: number,
     votePositive: number,
     voteNegative: number,
-    imageUrl:string
+    imageUrl:string,
+    sizes:string[],
+    styles:string[]
 }

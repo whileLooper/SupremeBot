@@ -1,0 +1,13 @@
+mat-form-field {
+    width: 100%;
+}
+
+mat-chip {
+    margin-bottom: 5px !important;
+    margin-left: 0 !important;
+    margin-right: 5px !important;
+}
+
+.select-chip {
+    width: 80px;
+}
