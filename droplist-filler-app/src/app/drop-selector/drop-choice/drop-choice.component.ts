@@ -14,19 +14,7 @@ export class DropChoiceComponent implements OnInit {
   @Input() tileWidth:string;
   products:Product[];
 
-  constructor(private dragulaService: DragulaService) {
-    const bag: any = this.dragulaService.find('first-bag');
-    if (bag !== undefined ) this.dragulaService.destroy('first-bag');
-    dragulaService.setOptions('first-bag', {
-      copy: function (el, source) {
-        return source.id === 'choice-bag';
-      },
-      accepts: function(el, target, source, sibling) {
-        return target.id !== 'choice-bag';
-      },
-      removeOnSpill: true,
-      copySortSource: false,
-    });
+  constructor() {
   }
 
   ngOnInit() {

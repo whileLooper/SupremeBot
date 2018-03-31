@@ -15,8 +15,23 @@ export class DropListComponent implements OnInit {
   @Input() tileWidth: string;
   droplist: Product[] = [];
 
-  constructor(private dropSelectorService: DropSelectorService, private dragulaService: DragulaService) {
-    dragulaService.dragend.subscribe((value) => {
+  constructor(private dropSelectorService: DropSelectorService, private dragulaService:DragulaService) {
+    const bag: any = this.dragulaService.find('first-bag');
+    if (bag !== undefined ) this.dragulaService.destroy('first-bag');
+    dragulaService.setOptions('first-bag', {
+      copy: function (el, source) {
+        return source.id === 'choice-bag';
+      },
+      accepts: (el, target, source, sibling) => {
+        return target.id !== 'choice-bag' && !this.droplist.some ( product => product.id === el.dataset.id);
+      },
+      removeOnSpill: true,
+      copySortSource: false,
+    });
+    dragulaService.dropModel.subscribe(value => {
+      this.onDroplistChange(this.droplist);
+    });
+    dragulaService.removeModel.subscribe(value => {
       this.onDroplistChange(this.droplist);
     });
   }
