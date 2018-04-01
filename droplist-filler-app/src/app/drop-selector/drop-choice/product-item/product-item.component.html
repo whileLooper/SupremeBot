@@ -9,8 +9,8 @@
     <app-carousel [images]="images" (loadImages)="loadImages()"></app-carousel>
   </mat-card-content>
   <div class="edit-product" *ngIf="editable">
-    <app-chip-list [items]="product.styles" [placeholder]="'Add Style'" (onchange)="changeStyles($event)" [options]="styleOptions"></app-chip-list>
+    <app-chip-list [items]="product.styles" [placeholder]="'Add Style'" (onchange)="changeStyles($event)" [options]="styleOptions" [showCustomInput]="true"></app-chip-list>
     <mat-divider [inset]="true"></mat-divider>
-    <app-chip-list [items]="product.sizes" [placeholder]="'Add Size'" (onchange)="changeSizes($event)" [options]="sizeOptions"></app-chip-list>
+    <app-chip-list [items]="product.sizes" [placeholder]="'Add Size'" (onchange)="changeSizes($event)" [options]="sizeOptions" [showCustomInput]="false"></app-chip-list>
   </div>
 </mat-card>

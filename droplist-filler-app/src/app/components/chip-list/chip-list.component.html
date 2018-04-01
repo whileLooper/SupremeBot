@@ -1,13 +1,18 @@
 <mat-chip-list #chipList>
-  <mat-chip *ngFor="let item of items" [selectable]="false" [removable]="true" (remove)="remove(item)">
+  <mat-chip *ngFor="let item of items" [selectable]="false" [removable]="true" (remove)="removeItem(item)" [disabled]="true">
     {{item}}
     <mat-icon matChipRemove>cancel</mat-icon>
   </mat-chip>
-  <mat-chip [selectable]="false" class="select-chip">
-    <mat-select [placeholder]="placeholder" (selectionChange)="addItem($event)" [(value)]="selected">
+  <mat-chip [selectable]="false" class="select-chip" [disabled]="true">
+    <mat-select *ngIf="!showCustomInput" [placeholder]="placeholder" (selectionChange)="addItem($event.value)" [(value)]="selected">
       <mat-option *ngFor="let option of filteredOptions" [value]="option">
         {{option}}
       </mat-option>
     </mat-select>
+    <input *ngIf="showCustomInput" [value]="selected" [placeholder]="placeholder" class="custom-input" (blur)="addItem($event.target.value)"
+      (keyup.enter)="addItem ($event.target.value)">
+  </mat-chip>
+  <mat-chip *ngIf="!items || items.length ===0" [disabled]="true" class="any-chip">
+    Buy any!
   </mat-chip>
 </mat-chip-list>

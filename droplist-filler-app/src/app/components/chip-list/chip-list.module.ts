@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChipListComponent } from './chip-list.component';
-import { MatChipsModule, MatIconModule, MatFormFieldModule, MatOptionModule, MatSelectModule } from '@angular/material';
+import { MatChipsModule, MatIconModule, MatFormFieldModule, MatOptionModule, MatSelectModule, MatInputModule } from '@angular/material';
 
 @NgModule({
   imports: [
@@ -10,7 +10,8 @@ import { MatChipsModule, MatIconModule, MatFormFieldModule, MatOptionModule, Mat
     MatIconModule,
     MatFormFieldModule,
     MatOptionModule,
-    MatSelectModule
+    MatSelectModule,
+    MatInputModule
   ],
   declarations: [ChipListComponent],
   exports:[ChipListComponent]

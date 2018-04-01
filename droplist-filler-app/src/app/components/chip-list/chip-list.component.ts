@@ -12,8 +12,9 @@ export class ChipListComponent implements OnInit, OnChanges {
   @Input() placeholder: string;
   @Input() items: any[] = [];
   @Output() onchange: EventEmitter<string[]> = new EventEmitter<string[]>();
+  @Input() showCustomInput:boolean;
 
-  selected: string;
+  selected: string = "";
 
   constructor() { }
 
@@ -29,18 +30,19 @@ export class ChipListComponent implements OnInit, OnChanges {
     this.filteredOptions = this.options.filter ( option => !this.items || !this.items.includes(option))
   }
 
-  addItem(event) {
-    console.log(this.selected);
-    const item = event.value;
+  addItem(item) {
+    if (!item || item=="")
+      return;
+
+    this.selected = item;
     this.items = this.items ? this.items : [];
     this.items.push(item);
-    setTimeout(() =>this.selected = null, 0);
+    setTimeout(() =>this.selected = "", 0);
     this.onchange.emit(this.items);
-    console.log(this.selected);
     this.filterOptions();
   }
 
-  remove(item) {
+  removeItem(item) {
     let index = this.items.indexOf(item);
 
     if (index >= 0) {
@@ -52,6 +54,10 @@ export class ChipListComponent implements OnInit, OnChanges {
 
     this.onchange.emit(this.items);
     this.filterOptions();
+  }
+
+  selectChipInput () {
+    console.log("hey");
   }
 
 }

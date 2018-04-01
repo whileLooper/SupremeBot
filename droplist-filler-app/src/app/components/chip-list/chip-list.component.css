@@ -11,3 +11,20 @@ mat-chip {
 .select-chip {
     width: 80px;
 }
+
+.any-chip {
+    background-color: #f22;
+    color: white;
+    font-weight: bold;
+}
+
+.custom-input {
+    width:inherit;
+    border: 0;
+    background-color: transparent;
+}
+
+.custom-input:focus {
+    border: 0;
+    outline: 0;
+}

@@ -37,3 +37,7 @@ mat-card-content {
     right: 0px;
     margin-bottom: 5px;
 }
+
+app-chip-list:not(:first-child) /deep/ .mat-chip-list-wrapper{
+    margin-top:5px;
+}
