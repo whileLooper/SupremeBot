@@ -43,7 +43,6 @@ app.get('/api/products', auth, function (req, res) {
 
 app.get('/api/images', auth, function (req, res) {
 	getImages(req.query.id, (images) => {
-		console.log(images);
 		res.send(images);
 	})
 });
@@ -81,7 +80,7 @@ function parseImages(htmlString) {
 	const $ = cheerio.load(htmlString);
 	var images = [];
 	$('#thumbcarousel .item > div').each(function (index, element) {
-		const url = SUPREME_COMMUNITY_BASE_URL + $(this).attr('data-image-hq');
+		const url = SUPREME_COMMUNITY_BASE_URL + $(this).attr('data-image-src');
 		images.push(url);
 	});
 	return images;
@@ -93,7 +92,6 @@ function getWeekUrl(callback) {
 		.then(function (htmlString) {
 			const $ = cheerio.load(htmlString);
 			const url = $(htmlString).find('.droplistSelection a.block').eq(0).attr('href');
-			console.log(url);
 			callback(url);
 		})
 		.catch(function (err) {
