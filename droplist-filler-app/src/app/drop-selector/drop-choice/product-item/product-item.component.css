@@ -1,3 +1,7 @@
+:host-context() {
+    cursor: pointer;
+}
+
 app-carousel {
     top:0;
     bottom:0;
@@ -39,6 +43,10 @@ mat-card-content {
     position: absolute;
     right: 0px;
     margin-bottom: 5px;
+}
+
+.edit-product {
+    cursor: default;
 }
 
 app-chip-list:not(:first-child) /deep/ .mat-chip-list-wrapper{
