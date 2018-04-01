@@ -1,19 +1,26 @@
-app-drop-list {
-    outline: 5px dashed #808;
-    outline-offset: 5px;
-    margin-right: 10px;
-    margin-left: 10px;
-    margin-bottom:20px;
+app-drop-choice {
     margin-top: 10px;
 }
 
-app-drop-choice {
+app-drop-list {
+    margin-bottom:20px;
     margin-top: 10px;
 }
 
 app-drop-list.sticky {
     position: sticky;
-    overflow-y: auto;
-    top: 0px;
-    height: 100vh;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    top: 10px;
+    height: 88vh;
+}
+
+div:before,
+div:after {
+    content: " ";
+    display: table;
+}
+
+div:after {
+    clear: both;
 }
