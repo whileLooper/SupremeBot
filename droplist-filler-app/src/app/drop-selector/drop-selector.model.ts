@@ -5,6 +5,6 @@ export interface Product {
     votePositive: number,
     voteNegative: number,
     imageUrl:string,
-    sizes:string[],
-    styles:string[]
+    sizes?:string[],
+    styles?:string[]
 }

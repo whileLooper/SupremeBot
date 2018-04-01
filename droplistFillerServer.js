@@ -2,7 +2,8 @@ const HTML = __dirname + '/droplist-filler-app/dist';
 const PREFS_FILE = "prefs.json";
 const DROPLIST_FILE = "droplist.json";
 const PORT = 4003;
-const SUPREME_COMMUNITY_URL = "https://www.supremecommunity.com/season/spring-summer2018/droplist/2018-03-22/";
+const SUPREME_COMMUNITY_BASE_URL = "https://www.supremecommunity.com";
+const SUPREME_COMMUNITY_SEASON_URL = SUPREME_COMMUNITY_BASE_URL + "/season/" + (new Date().getMonth() > 6 ? 'fall-winter' : 'spring-summer') + new Date().getFullYear();
 
 // Express
 const bodyParser = require('body-parser');
@@ -51,24 +52,23 @@ app.get('/api/droplist', function (req, res) {
 	res.send(getDropList());
 });
 
-function getDropList () {
+function getDropList() {
 	const droplist = jsonfile.readFileSync(DROPLIST_FILE);
 	return droplist
 }
 
 app.post('/api/droplist', function (req, res) {
-	saveInDroplist (req.body);
-	res.send({'success':true});
+	saveInDroplist(req.body);
+	res.send({ 'success': true });
 });
 
-function saveInDroplist (droplist) {
-	jsonfile.writeFileSync(DROPLIST_FILE, droplist, {spaces: 4, EOL: '\n'});
+function saveInDroplist(droplist) {
+	jsonfile.writeFileSync(DROPLIST_FILE, droplist, { spaces: 4, EOL: '\n' });
 }
 
 function getImages(productId, callback) {
-	const baseUrl = 'https://www.supremecommunity.com/season/itemdetails/';
-	console.log(baseUrl+productId);
-	request(baseUrl+productId)
+	const baseUrl = SUPREME_COMMUNITY_BASE_URL+ '/season/itemdetails/';
+	request(baseUrl + productId)
 		.then(function (htmlString) {
 			callback(parseImages(htmlString));
 		})
@@ -77,41 +77,57 @@ function getImages(productId, callback) {
 		});
 }
 
-function parseImages (htmlString) {
+function parseImages(htmlString) {
 	const $ = cheerio.load(htmlString);
 	var images = [];
 	$('#thumbcarousel .item > div').each(function (index, element) {
-		const baseUrl = 'https://www.supremecommunity.com';
-		const url = baseUrl + $(this).attr('data-image-hq');
+		const url = SUPREME_COMMUNITY_BASE_URL + $(this).attr('data-image-hq');
 		images.push(url);
 	});
 	return images;
 }
 
-function getProducts(callback) {
-	request(SUPREME_COMMUNITY_URL)
+function getWeekUrl(callback) {
+	const droplistsUrl = SUPREME_COMMUNITY_SEASON_URL + '/droplists/';
+	request(droplistsUrl)
 		.then(function (htmlString) {
-			callback(parseProducts(htmlString));
+			const $ = cheerio.load(htmlString);
+			const url = $(htmlString).find('.droplistSelection a.block').eq(0).attr('href');
+			console.log(url);
+			callback(url);
 		})
 		.catch(function (err) {
 			callback(null);
 		});
 }
 
+function getProducts(callback) {
+	getWeekUrl(url => {
+		if (!url)
+			return callback(null);
+
+		request(SUPREME_COMMUNITY_BASE_URL + url)
+			.then(function (htmlString) {
+				callback(parseProducts(htmlString));
+			})
+			.catch(function (err) {
+				callback(null);
+			});
+	});
+}
+
 function parseProducts(htmlString) {
 	const $ = cheerio.load(htmlString);
 	var products = [];
 	$('.card').each(function (index, element) {
-		const baseUrl = 'https://www.supremecommunity.com';
 		const newProduct = {
 			id: $(this).find('.card-details').attr('data-itemid'),
 			name: $(this).find('.name.item-details').text(),
-			imageUrl: baseUrl + $(this).find('img').attr('src'),
+			imageUrl: SUPREME_COMMUNITY_BASE_URL + $(this).find('img').attr('src'),
 			price: $(this).find('.label-price').text().trim().split('/')[0],
 			votePositive: parseInt($(this).find('.progress-bar-success').text()),
 			voteNegative: parseInt($(this).find('.progress-bar-danger').text())
 		}
-		console.log(newProduct);
 		products.push(newProduct);
 	});
 	return products;
