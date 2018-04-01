@@ -23,35 +23,37 @@ export class DropSelectorService {
     this.httpClient.get<Product[]>('api/products')
       .subscribe(products => {
         console.log(products);
-        this.products$.next(products)});
+        this.products$.next(products)
+      });
   }
 
   loadDroplist() {
     this.httpClient.get<Product[]>('api/droplist')
       .subscribe(products => {
         console.log(products);
-        this.droplist$.next(products)});
+        this.droplist$.next(products)
+      });
   }
 
   getAllProducts(): Observable<Product[]> {
-    this.loadProducts ();
+    this.loadProducts();
     return this.products$.asObservable();
   }
 
   getDroplist(): Observable<Product[]> {
-    this.loadDroplist ();
+    this.loadDroplist();
     return this.droplist$.asObservable();
   }
 
-  getImages(id:string, callback): void {
-    this.httpClient.get<Product[]>('api/images?id='+id)
+  getImages(id: string, callback): void {
+    this.httpClient.get<Product[]>('api/images?id=' + id)
       .subscribe(images => {
-        callback (images);
+        callback(images);
       });
   }
 
-  postDroplist(droplist:Product []):void {
-    this.httpClient.post<Product[]>('api/droplist', droplist).subscribe ( answer => console.log(answer));
+  postDroplist(droplist: Product[]): void {
+    this.httpClient.post<Product[]>('api/droplist', droplist).subscribe(answer => console.log(answer));
   }
 
 }
@@ -59,4 +61,3 @@ export class DropSelectorService {
 interface ProductResponse {
   data: Product[];
 }
-

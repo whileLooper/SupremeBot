@@ -30,7 +30,8 @@ export class CarouselComponent implements OnInit, OnChanges {
     this.setImage (this.lastMovement);
   }
 
-  changeImage (movement:imageMovement) {
+  changeImage (movement:imageMovement, event) {
+    event.stopPropagation();
     if (this.images.length > 1) {
       this.setImage(movement);
       this.lastMovement = imageMovement.stay;

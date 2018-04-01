@@ -1,8 +1,8 @@
 <div *ngIf="images?.length > 0" [style.background-image]="'url('+displayedImage+')'" class="image">
-  <button class="button-left button-side" (click)="changeImage (-1)">
+  <button class="button-left button-side" (click)="changeImage (-1, $event)">
     <mat-icon class="arrow md-80">chevron_left</mat-icon>
   </button>
-  <button class="button-right button-side" (click)="changeImage (1)">
+  <button class="button-right button-side" (click)="changeImage (1, $event)">
     <mat-icon class="arrow md-80">chevron_right</mat-icon>
   </button>
 </div>

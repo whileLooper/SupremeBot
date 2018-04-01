@@ -6,7 +6,7 @@
     <app-rating-bar [ratingPositive]="product.votePositive" [ratingNegative]="product.voteNegative"></app-rating-bar>
   </mat-card-subtitle>
   <mat-card-content>
-    <app-carousel [images]="images" (loadImages)="loadImages()" (dblclick)="openImageSlider()"></app-carousel>
+    <app-carousel [images]="images" (loadImages)="loadImages()" (click)="openImageSlider()"></app-carousel>
   </mat-card-content>
   <div class="edit-product" *ngIf="editable">
     <app-chip-list [items]="product.styles" [placeholder]="'Add Style'" (onchange)="changeStyles($event)" [options]="styleOptions" [showCustomInput]="true"></app-chip-list>
