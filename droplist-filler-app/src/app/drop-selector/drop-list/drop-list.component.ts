@@ -44,4 +44,9 @@ export class DropListComponent implements OnInit {
     this.dropSelectorService.postDroplist(this.droplist);
   }
 
+  clearDroplist () {
+    this.droplist = [];
+    this.dropSelectorService.postDroplist(this.droplist);
+  }
+
 }

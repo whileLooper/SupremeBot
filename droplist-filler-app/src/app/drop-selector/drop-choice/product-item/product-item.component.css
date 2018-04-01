@@ -19,8 +19,11 @@ mat-card-content {
     padding-top:100%;
 }
 
+.gallery-header {
+    min-height:50px;
+}
+
 .header-bold {
-    height:50px;
     font-weight: bold;
     font-size: 18px;
     text-align:center;

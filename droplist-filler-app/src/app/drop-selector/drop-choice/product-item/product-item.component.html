@@ -1,8 +1,8 @@
 <mat-card [class.no-bottom-padding]="editable">
-  <mat-card-title fxLayout="row">
-    <div class="header-bold" fxFlex="1 0 100px">{{product.name}} - {{product.price}}</div>
+  <mat-card-title>
+    <div class="header-bold" [class.gallery-header]="!editable">{{product.name}} - {{product.price}}</div>
   </mat-card-title>
-  <mat-card-subtitle>
+  <mat-card-subtitle *ngIf="!editable">
     <app-rating-bar [ratingPositive]="product.votePositive" [ratingNegative]="product.voteNegative"></app-rating-bar>
   </mat-card-subtitle>
   <mat-card-content>

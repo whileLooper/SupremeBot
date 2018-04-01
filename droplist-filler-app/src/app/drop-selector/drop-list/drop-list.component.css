@@ -21,3 +21,16 @@ app-product-item {
     font-weight: bold;
     color:white;
 }
+
+.empty-list {
+    height: 150px;
+    position: relative;
+}
+
+.add-icon {
+    position: absolute;
+    top: 25%;
+    left: 35%;
+    font-size:72px;
+    color:#777;
+}

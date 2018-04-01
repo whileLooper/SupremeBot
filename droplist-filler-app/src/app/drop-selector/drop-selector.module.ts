@@ -10,7 +10,7 @@ import { DropSelectorComponent } from './drop-selector.component';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import { ProductItemComponent } from './drop-choice/product-item/product-item.component';
 import { DropSelectorService } from './drop-selector.service';
-import { MatCardModule, MatDividerModule } from '@angular/material';
+import { MatCardModule, MatDividerModule, MatIconModule, MatButtonModule } from '@angular/material';
 import { RatingBarModule } from '../components/rating-bar/rating-bar.module';
 import {DndModule} from 'ng2-dnd';
 
@@ -24,7 +24,9 @@ import {DndModule} from 'ng2-dnd';
     DragulaModule,
     HttpClientModule,
     ChipListModule,
-    MatDividerModule
+    MatDividerModule,
+    MatIconModule,
+    MatButtonModule
   ],
   declarations: [DropListComponent, DropChoiceComponent, DropSelectorComponent, ProductItemComponent],
   exports: [DropSelectorComponent],
