@@ -15,10 +15,8 @@ export class DropSelectorService {
 
   constructor(private httpClient: HttpClient) {
     this.products$ = new ReplaySubject<Product[]>(1);
-    this.loadProducts ();
 
     this.droplist$ = new ReplaySubject<Product[]>(1);
-    this.loadDroplist ();
   }
 
   loadProducts() {
@@ -36,10 +34,12 @@ export class DropSelectorService {
   }
 
   getAllProducts(): Observable<Product[]> {
+    this.loadProducts ();
     return this.products$.asObservable();
   }
 
   getDroplist(): Observable<Product[]> {
+    this.loadDroplist ();
     return this.droplist$.asObservable();
   }
 

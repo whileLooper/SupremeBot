@@ -29,26 +29,26 @@ app
 	});
 
 var auth = function (req, res, next) {
-	if (req.cookies.supremeuser == username)
+	if (req.cookies.supremeUser == username)
 		next();
 	else
 		res.sendStatus(401);
 };
 
-app.get('/api/products', function (req, res) {
+app.get('/api/products', auth, function (req, res) {
 	getProducts((products) => {
 		res.send(products);
 	});
 });
 
-app.get('/api/images', function (req, res) {
+app.get('/api/images', auth, function (req, res) {
 	getImages(req.query.id, (images) => {
 		console.log(images);
 		res.send(images);
 	})
 });
 
-app.get('/api/droplist', function (req, res) {
+app.get('/api/droplist', auth, function (req, res) {
 	res.send(getDropList());
 });
 
@@ -57,7 +57,7 @@ function getDropList() {
 	return droplist
 }
 
-app.post('/api/droplist', function (req, res) {
+app.post('/api/droplist', auth, function (req, res) {
 	saveInDroplist(req.body);
 	res.send({ 'success': true });
 });
