@@ -21,7 +21,7 @@ function intializeWorkers(prefs, captchaPool) {
 
 function assignToWorker(startTime, productDefinition, callback) {
 	if (workers.every(worker => worker.stopped)) {
-		console.log("All workers are stopped --> product is timed out: ", productDefinition.keywords, new Date().toUTCString());
+		console.log("All workers are stopped --> product is timed out: ", productDefinition.name, new Date().toUTCString());
 		return callback();
 	}
 
@@ -46,7 +46,7 @@ function startDrop(mainCallback) {
 	intializeWorkers(prefs, captchaPool);
 
 	async.each(droplist, (itemDefinition, callback) => {
-		console.log("product waits for assignment ", itemDefinition.keywords);
+		console.log("product waits for assignment ", itemDefinition.name);
 		assignToWorker(Date.now(), itemDefinition, callback);
 	}, (err) => {
 		workers.map(worker => !worker.stopped && worker.stop());
@@ -109,7 +109,7 @@ class SupremeWorker {
 	}
 
 	assignProduct(productDefinition, callback) {
-		console.log("Worker has product assigned:", productDefinition.keywords, new Date().toUTCString());
+		console.log("Worker has product assigned:", productDefinition.name, new Date().toUTCString());
 		this.callback = callback;
 		this.productDefinition = productDefinition;
 		this.checkForProduct();
@@ -120,7 +120,7 @@ class SupremeWorker {
 		if (this.stopped === true)
 			return;
 
-		supremeMobile.findItem(this.productDefinition.category, this.productDefinition.keywords, product => {
+		supremeMobile.findItem(this.productDefinition.category, this.productDefinition.name, product => {
 			const startTime = new Date().toUTCString();
 			if (product && this.getCaptcha()) {
 				const availableStyles = getAvailableStyles(product, this.productDefinition);
@@ -158,7 +158,7 @@ class SupremeWorker {
 
 	checkForTimeout() {
 		if (isTimestampOlderThan(this.startTimestampMS, TIMEOUT_MS)) {
-			console.log("worker timed out with product", this.productDefinition.keywords, new Date().toUTCString());
+			console.log("worker timed out with product", this.productDefinition.name, new Date().toUTCString());
 			this.stop();
 		}
 	}
@@ -183,7 +183,7 @@ class SupremeWorker {
 	}
 
 	finishWork(hasUsedCaptcha) {
-		console.log("Worker has " + this.productDefinition.keywords + " has fully processed!", new Date().toUTCString());
+		console.log("Worker has " + this.productDefinition.name + " has fully processed!", new Date().toUTCString());
 		this.captcha = hasUsedCaptcha ? null : this.captcha;
 		this.productDefinition = null;
 		try {
@@ -246,15 +246,15 @@ function checkForRestock(mainCallback) {
 	var solver = new captchaSolver.CaptchaSolver(prefs.antiCaptchaKey);
 
 	async.eachSeries(droplist, (productDefinition, callback) => {
-		supremeMobile.findItem(productDefinition.category, productDefinition.keywords, product => {
+		supremeMobile.findItem(productDefinition.category, productDefinition.name, product => {
 			if (!product) {
-				IS_TESTING_RESTOCK && console.log("Product not found: ", productDefinition.keywords);
+				IS_TESTING_RESTOCK && console.log("Product not found: ", productDefinition.name);
 				return callback();
 			}
 
-			console.log("Restock: ", productDefinition.keywords);
+			console.log("Restock: ", productDefinition.name);
 			const availableStyles = getAvailableStyles(product, productDefinition);
-			IS_TESTING_RESTOCK && console.log(productDefinition.keywords, availableStyles);
+			IS_TESTING_RESTOCK && console.log(productDefinition.name, availableStyles);
 			if (availableStyles.length > 0) {
 				solver.solveCaptcha(CHECKOUT_URL, DATA_SITEKEY, captchaToken => {
 					new buyOnMobile.BuyOnMobile().buyProduct(product,
