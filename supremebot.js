@@ -218,7 +218,7 @@ function getAvailableStyles(product, productDefinition) {
 				size.prio = productDefinition.sizes ? productDefinition.sizes.findIndex(sizeDefiniton => stringsEqual(sizeDefiniton, size.name)) : 0;
 				return size;
 			})
-			.filter(size => size.prios != -1)
+			.filter(size => size.prio != -1)
 			.filter(size => size.stock_level === 1)
 			.sort((a, b) => a - b)
 			.map (size => size.id+"");
