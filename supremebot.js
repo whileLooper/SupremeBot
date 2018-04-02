@@ -5,6 +5,7 @@ var moment = require('moment-timezone')
 var supremeMobile = require('./apis/suprememobileapi');
 var captchaSolver = require('./apis/captchasolver');
 var buyOnMobile = require('./apis/buyOnMobile');
+var buyRequest = require('./apis/buyRequest');
 
 const START_TIME = { day: 4, hour: 10, minute: 57 };
 const WORKER_COUNT = 2;
@@ -51,9 +52,10 @@ function startDrop(mainCallback) {
 		console.log("product waits for assignment ", itemDefinition.name);
 		assignToWorker(Date.now(), itemDefinition, callback);
 	}, (err) => {
-		workers.map(worker => !worker.stopped && worker.stop());
+		workers.forEach(worker => !worker.stopped && worker.stop());
 		workers = [];
 		captchaPool.stop();
+		console.log("drop is fully processed!");
 		mainCallback();
 	});
 }
@@ -101,7 +103,7 @@ class SupremeWorker {
 	constructor(prefs, captchaPool) {
 		this.prefs = prefs;
 		this.captchaPool = captchaPool;
-		this.buyApi = new buyOnMobile.BuyOnMobile();
+		this.buyApi = new buyRequest.BuyRequest();
 		this.startTimestampMS = Date.now();
 		console.log("Worker has started", new Date().toUTCString());
 	}
@@ -140,19 +142,19 @@ class SupremeWorker {
 		});
 	}
 
-	printProduct (product) {
+	printProduct(product) {
 		console.log("Product: ", product.name);
 		if (!product.styles)
 			return console.log("product has no style property");
 
-		const styles = product.styles.map ( style => {
+		const styles = product.styles.map(style => {
 			if (style.sizes) {
-				const sizes = style.sizes.map ( size => {
-					return size.name + " (" + (size.stock_level?"X":"") + ")";
+				const sizes = style.sizes.map(size => {
+					return size.name + " (" + (size.stock_level ? "X" : "") + ")";
 				});
-				return "Style: "+style.name+ sizes;
-			}	else {
-				return "Style: "+style.name+ "Has no Sizes!";
+				return "Style: " + style.name + sizes;
+			} else {
+				return "Style: " + style.name + "Has no Sizes!";
 			}
 		});
 		console.log(styles)
@@ -181,17 +183,18 @@ class SupremeWorker {
 			this.captcha.token,
 			IS_TESTING,
 			(hasUsedCaptcha) => this.finishWork(hasUsedCaptcha),
-			() => this.checkForProduct());
+			(hasUsedCaptcha=false) => {
+				this.captchaToken = null;
+				this.checkForProduct();
+			});
 	}
 
 	finishWork(hasUsedCaptcha) {
 		console.log("Worker has " + this.productDefinition.name + " has fully processed!", new Date().toUTCString());
 		this.captcha = hasUsedCaptcha ? null : this.captcha;
-		this.productDefinition = null;
-		try {
+		if (this.productDefinition) {
+			this.productDefinition = null;
 			this.callback();
-		} catch (e) {
-			console.log("Callback for product was already called");
 		}
 	}
 
@@ -199,10 +202,9 @@ class SupremeWorker {
 		console.log("Worker has stopped!")
 		this.buyApi.stop();
 		this.stopped = true;
-		try {
+		if (this.productDefinition) {
+			this.productDefinition = null;
 			this.callback();
-		} catch (e) {
-			console.log("Callback for product was already called");
 		}
 	}
 }
@@ -220,12 +222,12 @@ function getAvailableStyles(product, productDefinition) {
 				size.prio = productDefinition.sizes ? productDefinition.sizes.findIndex(sizeDefiniton => stringsEqual(sizeDefiniton, size.name)) : 0;
 				return size;
 			})
-			.filter(size => size.prio != -1)
-			.filter(size => size.stock_level === 1)
-			.sort((a, b) => a - b)
-			.map (size => size.id+"");
+				.filter(size => size.prio != -1)
+				.filter(size => size.stock_level === 1)
+				.sort((a, b) => a - b)
+				.map(size => size.id + "");
 			return {
-				id: style.id+"",
+				id: style.id + "",
 				sizes: sizes
 			}
 		})
@@ -259,13 +261,13 @@ function checkForRestock(mainCallback) {
 			IS_TESTING_RESTOCK && console.log(productDefinition.name, availableStyles);
 			if (availableStyles.length > 0) {
 				solver.solveCaptcha(CHECKOUT_URL, DATA_SITEKEY, captchaToken => {
-					new buyOnMobile.BuyOnMobile().buyProduct(product,
+					new buyRequest.BuyRequest().buyProduct(product,
 						availableStyles,
 						prefs,
 						captchaToken,
 						IS_TESTING_RESTOCK,
 						(hasUsedCaptcha) => callback(),
-						() => callback());
+						(hasUsedCaptcha=false) => callback());
 				}, IS_TESTING_RESTOCK);
 			} else {
 				callback()
