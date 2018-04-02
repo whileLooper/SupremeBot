@@ -1,14 +1,16 @@
-var supremeMobile = require('./supreme-api/suprememobileapi');
 var async = require('async');
 var jsonfile = require('jsonfile');
-var captchaSolver = require('./captchasolver');
-var buyOnMobile = require('./buyOnMobile');
 var moment = require('moment-timezone')
+
+var supremeMobile = require('./apis/suprememobileapi');
+var captchaSolver = require('./apis/captchasolver');
+var buyOnMobile = require('./apis/buyOnMobile');
+
 const START_TIME = { day: 4, hour: 10, minute: 57 };
 const WORKER_COUNT = 2;
 const TIMEOUT_MS = 1000 * 60 * 15; // Beachte dass die zeit schon vor dem drop laeuft
-const CHECKOUT_URL = "https://www.supremenewyork.com/mobile#checkout";
-const DATA_SITEKEY = "6LeWwRkUAAAAAOBsau7KpuC9AV-6J8mhw4AjC3Xz";
+const CHECKOUT_URL = "https://www.supremenewyork.com/mobile#checkout"; // for captcha solver
+const DATA_SITEKEY = "6LeWwRkUAAAAAOBsau7KpuC9AV-6J8mhw4AjC3Xz"; // for captcha solver
 var workers = [];
 const IS_TESTING = process.argv.length > 2 ? process.argv[2] === 'testing' : false;
 const IS_TESTING_RESTOCK = process.argv.length > 2 ? process.argv[2] === 'testingRestock' : false;
