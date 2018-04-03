@@ -1,3 +1,4 @@
+import { ConfirmationModalModule } from './../components/confirmation-modal/confirmation-modal.module';
 import { ChipListModule } from './../components/chip-list/chip-list.module';
 import { HttpClientModule } from '@angular/common/http';
 import { DragulaModule } from 'ng2-dragula';
@@ -29,7 +30,8 @@ import { ImageSliderModalModule } from '../components/image-slider-modal/image-s
     MatIconModule,
     MatButtonModule,
     MatDialogModule,
-    ImageSliderModalModule
+    ImageSliderModalModule,
+    ConfirmationModalModule
   ],
   declarations: [DropListComponent, DropChoiceComponent, DropSelectorComponent, ProductItemComponent],
   exports: [DropSelectorComponent],

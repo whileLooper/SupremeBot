@@ -1,0 +1,8 @@
+<h1 mat-dialog-title>
+  {{data.question}}
+</h1>
+<div mat-dialog-actions fxLayout="row">
+  <div fxFlex="1 1 50px"></div>
+  <button mat-button [mat-dialog-close]="false" fxFlex="1 0 40px">{{data.cancel}}</button>
+  <button mat-button [mat-dialog-close]="true" cdkFocusInitial fxFlex="1 0 40px">{{data.ok}}</button>
+</div>

@@ -3,7 +3,8 @@ app-product-item {
 }
 
 .wrapper {
-    height:inherit;
+    max-height:100%;
+    position: relative;
 }
 
 .container {
