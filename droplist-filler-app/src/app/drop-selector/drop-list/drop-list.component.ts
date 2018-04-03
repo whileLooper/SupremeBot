@@ -14,6 +14,7 @@ export class DropListComponent implements OnInit {
   @Input() droplist$: Observable<Product[]>;
   @Input() tileWidth: string;
   droplist: Product[] = [];
+  isFadeOut: boolean = true;
 
   constructor(private dropSelectorService: DropSelectorService, private dragulaService:DragulaService) {
     const bag: any = this.dragulaService.find('first-bag');
@@ -38,6 +39,15 @@ export class DropListComponent implements OnInit {
 
   ngOnInit() {
     this.droplist$.subscribe (droplist => this.droplist = droplist);
+  }
+
+  onScroll(event) {
+    console.log(event);
+    const scrollHeight = event.target.scrollHeight;
+    const height = event.target.clientHeight;
+    const scrollTop = event.target.scrollTop;
+    const treshold = 30;
+    this.isFadeOut = scrollHeight - height - scrollTop > treshold ? true: false;
   }
 
   onDroplistChange() {

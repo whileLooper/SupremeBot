@@ -11,7 +11,7 @@
     </button>
   </div>
   <div fxLayout="column" fxFlex="0 1 auto" fxLayoutGap="10px" [dragula]="'first-bag'" [dragulaModel]='droplist' id="drop-bag"
-    *ngIf="droplist" class="container" [style.width]="tileWidth">
+    *ngIf="droplist" class="container" [style.width]="tileWidth" (scroll)="onScroll($event)" [class.fadedScroller]="isFadeOut">
     <div *ngIf="!droplist ||droplist.length === 0" class="empty-list"> <mat-icon class="add-icon">add</mat-icon></div>
     <app-product-item fxFlex="0 0 auto" *ngFor="let product of droplist; let x = index" [product]="product" [editable]="true"
       (onchange)="onDroplistChange()">

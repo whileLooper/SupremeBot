@@ -34,3 +34,15 @@ app-product-item {
     font-size:72px;
     color:#777;
 }
+
+.fadedScroller {
+}
+.fadedScroller:after {
+    content:'';
+    bottom: 5px;
+    left: 5px;
+    height: 80px;
+    right: 5px;
+    background: linear-gradient(to top, rgba(150, 151, 151, 1) 0%, rgba(251, 251, 251, 0) 100%);
+    position: absolute;
+}
