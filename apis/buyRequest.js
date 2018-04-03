@@ -58,7 +58,7 @@ class BuyRequest {
     checkout(sizeId, prefs, captchaToken, isTesting) {
         return new Promise((resolve, reject) => {
             const cookieSub = encodeURI("{\""+sizeId+"\":1}");
-            const formData = {
+            var formData = {
                 "store_credit_id": "",
                 "from_mobile": "1",
                 "cookie-sub": cookieSub,
@@ -77,8 +77,14 @@ class BuyRequest {
                 "credit_card[month]": prefs.cardMonth,
                 "credit_card[year]": prefs.cardYear,
                 "credit_card[vval]": prefs.cardVval,
-                "order[terms]": "0",
+                "order[terms]": "1",
                 "g-recaptcha-response": captchaToken
+            }
+
+            if (isTesting) {
+                formData = {
+                    "cookie-sub": cookieSub
+                };
             }
 
             const options = {
@@ -91,7 +97,7 @@ class BuyRequest {
             request(options, (error, response, body) => {
                 console.log(body);
                 body = JSON.parse(body);
-                if (body.status != "failed" && body.status != "outOfStock")
+                if (isTesting || (body.status != "failed" && body.status != "outOfStock"))
                     resolve(body);
                 else
                     reject(true);

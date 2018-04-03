@@ -15,6 +15,7 @@ const DATA_SITEKEY = "6LeWwRkUAAAAAOBsau7KpuC9AV-6J8mhw4AjC3Xz"; // for captcha 
 var workers = [];
 const IS_TESTING = process.argv.length > 2 ? process.argv[2] === 'testing' : false;
 const IS_TESTING_RESTOCK = process.argv.length > 2 ? process.argv[2] === 'testingRestock' : false;
+const IS_RESTOCK = process.argv.length > 2 ? process.argv[2] === 'restock' : false;
 
 function intializeWorkers(prefs, captchaPool) {
 	workers = [];
@@ -278,7 +279,6 @@ function checkForRestock(mainCallback) {
 
 function waitForDrop() {
 	const date = moment().tz("Europe/London");
-	// checkForRestock(() => { });
 	if (date.day() === START_TIME.day &&
 		date.hour() === START_TIME.hour &&
 		date.minute() > START_TIME.minute) {
@@ -293,9 +293,17 @@ function isTimestampOlderThan(timestamp, treshold) {
 	return Date.now() - timestamp > treshold;
 }
 
+function watchRestock () {
+	checkForRestock(() => {
+		setTimeout(() => watchRestock(), 10000);
+	});
+}
+
 if (IS_TESTING)
 	startDrop(() => process.exit());
 else if (IS_TESTING_RESTOCK)
 	checkForRestock(() => process.exit());
+else if (IS_RESTOCK)
+	watchRestock ();
 else
 	waitForDrop();

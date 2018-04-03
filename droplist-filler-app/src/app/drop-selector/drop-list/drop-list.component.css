@@ -35,8 +35,6 @@ app-product-item {
     color:#777;
 }
 
-.fadedScroller {
-}
 .fadedScroller:after {
     content:'';
     bottom: 5px;
