@@ -1,8 +1,11 @@
 var request = require('request');
+const cheerio = require('cheerio');
 
 function ADD_URL(productId) {
     return 'https://www.supremenewyork.com/shop/' + productId + '/add.json';
 }
+const SHOP_URL = "https://www.supremenewyork.com/shop";
+const CHECKOUT_PAGE_URL = "https://www.supremenewyork.com/checkout";
 const CHECKOUT_URL = "https://www.supremenewyork.com/checkout.json";
 
 class BuyRequest {
@@ -13,10 +16,12 @@ class BuyRequest {
         const styleId = styles[0].id;
         const sizeId = styles[0].sizes[0];
         try {
+            const csrfToken = await this.requestCsrfToken();
             await this.sleep(500);
-            await this.addToCart(product.id, styleId, sizeId);
+            await this.addToCart(product.id, styleId, sizeId, csrfToken);
+            await this.requestCheckoutSite();
             await this.sleep(1000);
-            await this.checkout(sizeId, prefs, captchaToken, isTesting);
+            await this.checkout(sizeId, prefs, captchaToken, csrfToken, isTesting);
             console.log("End   Time: " + new Date().toUTCString());
             finishCallback(true);
         } catch (e) {
@@ -31,7 +36,24 @@ class BuyRequest {
         });
     }
 
-    addToCart(productId, styleId, sizeId) {
+    requestCsrfToken() {
+        return new Promise((resolve, reject) => {
+            const options = {
+                method: 'GET',
+                uri: SHOP_URL,
+                jar: this.j,
+            };
+
+            request(options, (error, response, body) => {
+                const $ = cheerio.load(body);
+                const csrfToken = $('[name="csrf-token"]').attr('content');
+                console.log(csrfToken);
+                resolve(csrfToken);
+            });
+        });
+    }
+
+    addToCart(productId, styleId, sizeId, csrfToken) {
         return new Promise((resolve, reject) => {
             const options = {
                 method: 'POST',
@@ -41,11 +63,16 @@ class BuyRequest {
                     style: styleId,
                     qty: 1
                 },
+                headers: {
+                    "x-csrf-token": csrfToken,
+                    "X-Requested-With": "XMLHttpRequest"
+                },
                 jar: this.j,
                 json: true
             };
 
             request(options, (error, response, body) => {
+                console.log(error);
                 console.log(body);
                 if (body.length > 0 && body[0].in_stock)
                     resolve(body);
@@ -55,14 +82,27 @@ class BuyRequest {
         });
     }
 
-    checkout(sizeId, prefs, captchaToken, isTesting) {
+    requestCheckoutSite() {
         return new Promise((resolve, reject) => {
-            const cookieSub = encodeURI("{\""+sizeId+"\":1}");
+            const options = {
+                method: 'GET',
+                uri: CHECKOUT_PAGE_URL,
+                jar: this.j,
+            };
+
+            request(options, (error, response, body) => resolve());
+        });
+    }
+
+    checkout(sizeId, prefs, captchaToken, csrfToken, isTesting) {
+        return new Promise((resolve, reject) => {
+            const cookieSub = encodeURI("{\"" + sizeId + "\":1}");
+            console.log(this.j);
             var formData = {
+                "utf8": "✓",
+                "authenticity_token": csrfToken,
                 "store_credit_id": "",
-                "from_mobile": "1",
-                "cookie-sub": cookieSub,
-                "same_as_billing_address": "1",
+                //"cookie-sub": cookieSub,
                 "order[billing_name]": prefs.name,
                 "order[email]": prefs.email,
                 "order[tel]": prefs.tel,
@@ -72,26 +112,25 @@ class BuyRequest {
                 "order[billing_city]": prefs.city,
                 "order[billing_zip]": prefs.zip,
                 "order[billing_country]": prefs.country,
+                "same_as_billing_address": "1",
                 "credit_card[type]": prefs.cardType,
                 "credit_card[cnb]": prefs.cardNumber,
                 "credit_card[month]": prefs.cardMonth,
                 "credit_card[year]": prefs.cardYear,
                 "credit_card[vval]": prefs.cardVval,
-                "order[terms]": "1",
+                "order[terms]": isTesting ? "0" : "1",
                 "g-recaptcha-response": captchaToken
-            }
-
-            if (isTesting) {
-                formData = {
-                    "cookie-sub": cookieSub
-                };
             }
 
             const options = {
                 method: 'POST',
                 uri: CHECKOUT_URL,
                 formData: formData,
-                jar: this.j
+                jar: this.j,
+                headers: {
+                    "x-csrf-token": csrfToken,
+                    "X-Requested-With": "XMLHttpRequest"
+                },
             };
 
             request(options, (error, response, body) => {
