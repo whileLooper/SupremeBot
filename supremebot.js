@@ -265,10 +265,10 @@ function checkForRestock(mainCallback) {
 				return callback();
 			}
 
-			console.log("Restock: ", productDefinition.name);
 			const availableStyles = getAvailableStyles(product, productDefinition);
 			IS_TESTING_RESTOCK && console.log(productDefinition.name, availableStyles);
 			if (availableStyles.length > 0) {
+				console.log("Restock: ", productDefinition.name);
 				solver.solveCaptcha(CHECKOUT_URL, DATA_SITEKEY, captchaToken => {
 					new buyRequest.BuyRequest().buyProduct(product,
 						availableStyles,

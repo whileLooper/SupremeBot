@@ -36,6 +36,7 @@ api.findItem = function (category, keywords, callback) {
             if (!foundItem)
                 callback(null);
         }).catch(e => {
+            console.log(e);
             return null;
         });
 };
@@ -55,6 +56,9 @@ api.getItem = function (id, name, callback) {
             json.name = name;
             json.id = id;
             callback(json);
+        }).catch (e => {
+            console.log(e);
+            callback(null);
         });
 }
 
