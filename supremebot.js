@@ -104,7 +104,7 @@ class SupremeWorker {
 	constructor(prefs, captchaPool) {
 		this.prefs = prefs;
 		this.captchaPool = captchaPool;
-		this.buyApi = new buyRequest.BuyRequest();
+		this.buyApi = new buyOnMobile.BuyOnMobile();
 		this.startTimestampMS = Date.now();
 		console.log("Worker has started", new Date().toUTCString());
 	}
@@ -262,7 +262,7 @@ function checkForRestock(mainCallback) {
 			IS_TESTING_RESTOCK && console.log(productDefinition.name, availableStyles);
 			if (availableStyles.length > 0) {
 				solver.solveCaptcha(CHECKOUT_URL, DATA_SITEKEY, captchaToken => {
-					new buyRequest.BuyRequest().buyProduct(product,
+					new buyOnMobile.BuyOnMobile().buyProduct(product,
 						availableStyles,
 						prefs,
 						captchaToken,
