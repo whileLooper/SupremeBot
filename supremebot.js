@@ -83,10 +83,18 @@ class CaptchaPool {
 	}
 
 	requestNewCaptcha() {
+		if (this.stopped)
+			return;
+
 		this.inProgress++;
 		this.solver.solveCaptcha(CHECKOUT_URL, DATA_SITEKEY, captchaToken => {
-			this.captchaList.push({ token: captchaToken, timestamp: Date.now() });
 			this.inProgress--;
+			if (captchaToken) {
+				this.captchaList.push({ token: captchaToken, timestamp: Date.now() });
+			} else {
+				console.log("receive no token! Will request new token");
+				this.requestNewCaptcha();
+			}
 		}, IS_TESTING);
 	}
 
@@ -184,7 +192,7 @@ class SupremeWorker {
 			this.captcha.token,
 			IS_TESTING,
 			(hasUsedCaptcha) => this.finishWork(hasUsedCaptcha),
-			(hasUsedCaptcha=false) => {
+			(hasUsedCaptcha = false) => {
 				this.captchaToken = null;
 				this.checkForProduct();
 			});
@@ -268,7 +276,7 @@ function checkForRestock(mainCallback) {
 						captchaToken,
 						IS_TESTING_RESTOCK,
 						(hasUsedCaptcha) => callback(),
-						(hasUsedCaptcha=false) => callback());
+						(hasUsedCaptcha = false) => callback());
 				}, IS_TESTING_RESTOCK);
 			} else {
 				callback()
@@ -293,7 +301,7 @@ function isTimestampOlderThan(timestamp, treshold) {
 	return Date.now() - timestamp > treshold;
 }
 
-function watchRestock () {
+function watchRestock() {
 	checkForRestock(() => {
 		setTimeout(() => watchRestock(), 10000);
 	});
@@ -304,6 +312,6 @@ if (IS_TESTING)
 else if (IS_TESTING_RESTOCK)
 	checkForRestock(() => process.exit());
 else if (IS_RESTOCK)
-	watchRestock ();
+	watchRestock();
 else
 	waitForDrop();
