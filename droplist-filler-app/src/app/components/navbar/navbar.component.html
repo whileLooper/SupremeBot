@@ -15,5 +15,7 @@
 
 </mat-toolbar>
 <mat-menu x-position="before" #menu="matMenu">
-  <button mat-button *ngFor="let navigationItem of navigationList" [routerLink]="navigationItem.url">{{navigationItem.name}}</button>
+  <div fxLayout="column">
+    <button mat-button *ngFor="let navigationItem of navigationList" [routerLink]="navigationItem.url">{{navigationItem.name}}</button>
+  </div>
 </mat-menu>
