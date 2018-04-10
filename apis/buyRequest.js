@@ -43,6 +43,9 @@ class BuyRequest {
                 method: 'GET',
                 uri: SHOP_URL,
                 jar: this.j,
+                headers: {
+                    "user-agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"
+                }
             };
 
             request(options, (error, response, body) => {
@@ -66,7 +69,8 @@ class BuyRequest {
                 },
                 headers: {
                     "x-csrf-token": csrfToken,
-                    "X-Requested-With": "XMLHttpRequest"
+                    "X-Requested-With": "XMLHttpRequest",
+                    "user-agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"
                 },
                 jar: this.j,
                 json: true
@@ -128,7 +132,8 @@ class BuyRequest {
                 jar: this.j,
                 headers: {
                     "x-csrf-token": csrfToken,
-                    "X-Requested-With": "XMLHttpRequest"
+                    "X-Requested-With": "XMLHttpRequest",
+                    "user-agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"
                 },
             };
 
