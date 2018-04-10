@@ -100,7 +100,6 @@ function getWeekUrl(week, callback) {
 		.then(function (htmlString) {
 			const $ = cheerio.load(htmlString);
 			const url = $(htmlString).find('.droplistSelection a.block').eq(week).attr('href');
-			console.log(url);
 			callback(url);
 		})
 		.catch(function (err) {
@@ -144,14 +143,11 @@ function getCurrentProducts(callback) {
 
 	request(SUPREME_PRODUCTS_URL, function (err, response, body) {
 		const productCategories = JSON.parse(body).products_and_categories;
-		console.log(productCategories);
 		var allProducts = [];
 		for (var category in productCategories) {
 			if (category == "new")
 				continue;
-			console.log(category);
 			var productList = productCategories[category].map(product => {
-				console.log(product);
 				return {
 					name: product.name,
 					id: -1,
