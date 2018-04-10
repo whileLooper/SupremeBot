@@ -19,8 +19,8 @@ export class DropSelectorService {
     this.droplist$ = new ReplaySubject<Product[]>(1);
   }
 
-  loadProducts() {
-    this.httpClient.get<Product[]>('api/products')
+  loadProducts(week:number) {
+    this.httpClient.get<Product[]>('api/products?week='+week)
       .subscribe(products => {
         console.log(products);
         this.products$.next(products)
@@ -35,8 +35,8 @@ export class DropSelectorService {
       });
   }
 
-  getAllProducts(): Observable<Product[]> {
-    this.loadProducts();
+  getAllProducts(week:number): Observable<Product[]> {
+    this.loadProducts(week);
     return this.products$.asObservable();
   }
 

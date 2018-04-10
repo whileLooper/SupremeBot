@@ -36,7 +36,8 @@ var auth = function (req, res, next) {
 };
 
 app.get('/api/products', auth, function (req, res) {
-	getProducts((products) => {
+	const week = req.query.week;
+	getProducts(week, (products) => {
 		res.send(products);
 	});
 });
@@ -86,12 +87,14 @@ function parseImages(htmlString) {
 	return images;
 }
 
-function getWeekUrl(callback) {
+function getWeekUrl(week, callback) {
 	const droplistsUrl = SUPREME_COMMUNITY_SEASON_URL + '/droplists/';
 	request(droplistsUrl)
 		.then(function (htmlString) {
 			const $ = cheerio.load(htmlString);
-			const url = $(htmlString).find('.droplistSelection a.block').eq(0).attr('href');
+			console.log(parseInt(week)+1);
+			const url = $(htmlString).find('.droplistSelection a.block').eq(parseInt(week)+1).attr('href');
+			console.log(url);
 			callback(url);
 		})
 		.catch(function (err) {
@@ -99,8 +102,8 @@ function getWeekUrl(callback) {
 		});
 }
 
-function getProducts(callback) {
-	getWeekUrl(url => {
+function getProducts(week, callback) {
+	getWeekUrl(week, url => {
 		if (!url)
 			return callback(null);
 

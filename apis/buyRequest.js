@@ -72,7 +72,6 @@ class BuyRequest {
             };
 
             request(options, (error, response, body) => {
-                console.log(error);
                 console.log(body);
                 if (body.length > 0 && body[0].in_stock)
                     resolve(body);
@@ -97,7 +96,6 @@ class BuyRequest {
     checkout(sizeId, prefs, captchaToken, csrfToken, isTesting) {
         return new Promise((resolve, reject) => {
             const cookieSub = encodeURI("{\"" + sizeId + "\":1}");
-            console.log(this.j);
             var formData = {
                 "utf8": "✓",
                 "authenticity_token": csrfToken,
