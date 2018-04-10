@@ -17,10 +17,11 @@ class BuyRequest {
         const sizeId = styles[0].sizes[0];
         try {
             const csrfToken = await this.requestCsrfToken();
-            await this.sleep(500);
+            await this.sleep(350);
             await this.addToCart(product.id, styleId, sizeId, csrfToken);
+            await this.sleep(350);
             await this.requestCheckoutSite();
-            await this.sleep(1000);
+            await this.sleep(3300);
             await this.checkout(sizeId, prefs, captchaToken, csrfToken, isTesting);
             console.log("End   Time: " + new Date().toUTCString());
             finishCallback(true);
