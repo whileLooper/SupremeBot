@@ -4,6 +4,7 @@ const DROPLIST_FILE = "droplist.json";
 const PORT = 4003;
 const SUPREME_COMMUNITY_BASE_URL = "https://www.supremecommunity.com";
 const SUPREME_COMMUNITY_SEASON_URL = SUPREME_COMMUNITY_BASE_URL + "/season/" + (new Date().getMonth() > 6 ? 'fall-winter' : 'spring-summer') + new Date().getFullYear();
+const SUPREME_PRODUCTS_URL = "https://www.supremenewyork.com/mobile_stock.json";
 
 // Express
 const bodyParser = require('body-parser');
@@ -37,9 +38,15 @@ var auth = function (req, res, next) {
 
 app.get('/api/products', auth, function (req, res) {
 	const week = req.query.week;
-	getProducts(week, (products) => {
-		res.send(products);
-	});
+	if (week == 0) {
+		getCurrentProducts(products => {
+			res.send(products);
+		});
+	} else {
+		getProducts(week, (products) => {
+			res.send(products);
+		});
+	}
 });
 
 app.get('/api/images', auth, function (req, res) {
@@ -67,7 +74,7 @@ function saveInDroplist(droplist) {
 }
 
 function getImages(productId, callback) {
-	const baseUrl = SUPREME_COMMUNITY_BASE_URL+ '/season/itemdetails/';
+	const baseUrl = SUPREME_COMMUNITY_BASE_URL + '/season/itemdetails/';
 	request(baseUrl + productId)
 		.then(function (htmlString) {
 			callback(parseImages(htmlString));
@@ -92,8 +99,7 @@ function getWeekUrl(week, callback) {
 	request(droplistsUrl)
 		.then(function (htmlString) {
 			const $ = cheerio.load(htmlString);
-			console.log(parseInt(week)+1);
-			const url = $(htmlString).find('.droplistSelection a.block').eq(parseInt(week)+1).attr('href');
+			const url = $(htmlString).find('.droplistSelection a.block').eq(week).attr('href');
 			console.log(url);
 			callback(url);
 		})
@@ -133,5 +139,32 @@ function parseProducts(htmlString) {
 	});
 	return products;
 }
+
+function getCurrentProducts(callback) {
+
+	request(SUPREME_PRODUCTS_URL, function (err, response, body) {
+		const productCategories = JSON.parse(body).products_and_categories;
+		console.log(productCategories);
+		var allProducts = [];
+		for (var category in productCategories) {
+			if (category == "new")
+				continue;
+			console.log(category);
+			var productList = productCategories[category].map(product => {
+				console.log(product);
+				return {
+					name: product.name,
+					id: -1,
+					price: "$ "+product.price/100,
+					votePositive: 0,
+					voteNegative: 0,
+					imageUrl: product.image_url_hi,
+				}
+			});
+			allProducts = allProducts.concat(productList);
+		}
+		callback(allProducts);
+	});
+};
 
 username = jsonfile.readFileSync(PREFS_FILE).password;

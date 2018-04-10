@@ -14,7 +14,6 @@ export class DropSelectorComponent implements OnInit {
   constructor(private dropSelectorService: DropSelectorService, private route: ActivatedRoute, private router: Router) {
     router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        console.log(event);
         this.loadProducts();
       }
     });

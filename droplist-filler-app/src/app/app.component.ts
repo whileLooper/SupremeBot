@@ -11,11 +11,15 @@ export class AppComponent {
 
   navigationList = [
     {
-      name: 'Previous Week',
+      name: 'Droplist',
       url: '/droplist/1'
     },
     {
-      name: 'Droplist',
+      name: 'Previous Week',
+      url: '/droplist/2'
+    },
+    {
+      name: 'In Shop',
       url: '/droplist/0'
     },
     {

@@ -5,5 +5,5 @@ import { LoginComponent } from './login/login-component/login.component';
 export const ROUTES: Routes = [
   {path: 'droplist/:week', component: DropSelectorComponent},
   {path: 'login', component: LoginComponent},
-  {path: '**', redirectTo: '/droplist'}
+  {path: '**', redirectTo: '/droplist/1'}
 ];
