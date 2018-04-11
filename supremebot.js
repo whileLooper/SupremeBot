@@ -2,10 +2,12 @@ var async = require('async');
 var jsonfile = require('jsonfile');
 var moment = require('moment-timezone')
 
+var supremeApi = require('./apis/supremeapi');
 var supremeMobile = require('./apis/suprememobileapi');
 var captchaSolver = require('./apis/captchasolver');
 var buyOnMobile = require('./apis/buyOnMobile');
 var buyRequest = require('./apis/buyRequest');
+var buyProductPuppeteer = require('./apis/buyProductPuppeteer');
 
 const START_TIME = { day: 4, hour: 10, minute: 57 };
 const WORKER_COUNT = 2;

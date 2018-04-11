@@ -125,10 +125,11 @@ function getProducts(week, callback) {
 function parseProducts(htmlString) {
 	const $ = cheerio.load(htmlString);
 	var products = [];
-	$('.card').each(function (index, element) {
+	$('.masonry__item').each(function (index, element) {
 		const newProduct = {
 			id: $(this).find('.card-details').attr('data-itemid'),
 			name: $(this).find('.name.item-details').text(),
+			category:$(this).attr('data-masonry-filter'),
 			imageUrl: SUPREME_COMMUNITY_BASE_URL + $(this).find('img').attr('src'),
 			price: $(this).find('.label-price').text().trim().split('/')[0],
 			votePositive: parseInt($(this).find('.progress-bar-success').text()),
@@ -151,6 +152,7 @@ function getCurrentProducts(callback) {
 				return {
 					name: product.name,
 					id: -1,
+					category: category,
 					price: "$ "+product.price/100,
 					votePositive: 0,
 					voteNegative: 0,
