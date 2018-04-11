@@ -235,7 +235,6 @@ api.findItem = function (category, keywords, mainCallback) {
         var newProduct = null;
         $('article').each(function (i, element) {
             const name = $(this).find('h1 .name-link').text().toLowerCase();
-            console.log(name);
             if (keywords.split(" ").every(keyword => name.includes(keyword)) &&
                 $(this).find('sold_out_tag').text() == "") {
                 if (!newProduct) {
@@ -273,11 +272,25 @@ function getSizes(url, callback) {
     request(url, function (err, resp, html) {
         var $ = cheerio.load(html);
         var sizes = [];
-        $('select#size option').each(function (i, element) {
-            const name = $(this).text();
-            const id = $(this).attr('value');
-            sizes.push({ name: name, id: id });
-        });
+        if ($('input#size').length) {
+            const size = {
+                id: $('#size').attr('value'),
+                name: "one-size",
+                stock_level: 1,
+            }
+            sizes.push(size);
+        } else {
+            $('select#size option').each(function (i, element) {
+                const name = $(this).text();
+                const id = $(this).attr('value');
+                sizes.push(
+                    {
+                        name: name,
+                        id: id,
+                        stock_level: 1,
+                    });
+            });
+        }
         callback(sizes);
     });
 }
@@ -365,6 +378,10 @@ api.log = function (message) {
     console.log('[supreme api] ' + message);
 };
 
-api.findItem("accessories", "hanes", result => console.log(result));
+if (typeof require != 'undefined' && require.main == module) {
+    api.findItem("accessories", "night lite", result => {
+        result.styles.forEach(item => console.log(item));
+    });
+}
 
 module.exports = api;

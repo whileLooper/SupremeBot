@@ -8,13 +8,13 @@ class BuyProductPuppeteer {
         var browser = await puppeteer.launch(args);
         try {
             const style = styles [0];
-            const sizeId = style.sizes[0].id;
+            const sizeId = style.sizes[0];
 
             const page = await browser.newPage();
-            await page.goto(product.link);
+            await page.goto(style.id);
 
             const SIZE_SELECTOR = "#size";
-            await page.select(SIZE_SELECTOR, sizeId.toString());
+            await page.$eval(SIZE_SELECTOR, (el, value) => el.value = value, sizeId.toString());
 
             const ADD_PRODUCT_SELECTOR = '#add-remove-buttons>input';
             const addProductButton = await page.$(ADD_PRODUCT_SELECTOR);
@@ -30,7 +30,7 @@ class BuyProductPuppeteer {
             const CHECKOUT_SELECTOR = '#cart .checkout';
             await page.click(CHECKOUT_SELECTOR);
 
-            await page.waitFor(500);
+            await page.waitFor(1000);
 
             const NAME_SELECTOR = '#order_billing_name';
             const EMAIL_SELECTOR = '#order_email';
@@ -45,7 +45,7 @@ class BuyProductPuppeteer {
             const CARD_YEAR_SELECTOR = '#credit_card_year';
             const CARD_VVAL_SELECTOR = '#vval';
             const TERMS_SELECTOR = '#order_terms'
-            const RECAPTCHA_RESPONSE = 'g-recaptcha-response';
+            const RECAPTCHA_RESPONSE_SELECTOR = '#g-recaptcha-response';
 
             await page.$eval(NAME_SELECTOR, (el, value) => el.value = value, prefs.name);
             await page.$eval(EMAIL_SELECTOR, (el, value) => el.value = value, prefs.email);
@@ -58,9 +58,9 @@ class BuyProductPuppeteer {
             await page.$eval(CARD_YEAR_SELECTOR, (el, value) => el.value = value, prefs.cardYear);
             await page.$eval(CARD_VVAL_SELECTOR, (el, value) => el.value = value, prefs.cardVval);
             await page.click(TERMS_SELECTOR);
-            await page.$eval(RECAPTCHA_RESPONSE, (el, value) => el.value = value, captchaToken);
+            await page.$eval(RECAPTCHA_RESPONSE_SELECTOR, (el, value) => el.value = value, captchaToken);
 
-            if (!testing) {
+            if (!isTesting) {
                 await page.$eval(CARD_NUMBER_SELECTOR, (el, value) => el.value = value, prefs.cardNumber);
                 await page.$eval(ADRESS_SELECTOR, (el, value) => el.value = value, prefs.adress);
             }
