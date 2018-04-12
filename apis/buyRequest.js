@@ -51,7 +51,6 @@ class BuyRequest {
             request(options, (error, response, body) => {
                 const $ = cheerio.load(body);
                 const csrfToken = $('[name="csrf-token"]').attr('content');
-                console.log(csrfToken);
                 resolve(csrfToken);
             });
         });
@@ -109,7 +108,7 @@ class BuyRequest {
                 "order[billing_name]": prefs.name,
                 "order[email]": prefs.email,
                 "order[tel]": prefs.tel,
-                "order[billing_address]": prefs.adress,
+                "order[billing_address]": isTesting ? "hans mueller gasse 55" : prefs.adress,
                 "order[billing_address_2]": "",
                 "order[billing_address_3]": "",
                 "order[billing_city]": prefs.city,
@@ -117,7 +116,7 @@ class BuyRequest {
                 "order[billing_country]": prefs.country,
                 "same_as_billing_address": "1",
                 "credit_card[type]": prefs.cardType,
-                "credit_card[cnb]": prefs.cardNumber,
+                "credit_card[cnb]": isTesting ? "1234123412341234" : prefs.cardNumber,
                 "credit_card[month]": prefs.cardMonth,
                 "credit_card[year]": prefs.cardYear,
                 "credit_card[vval]": prefs.cardVval,

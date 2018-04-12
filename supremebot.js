@@ -18,6 +18,7 @@ var workers = [];
 const IS_TESTING = process.argv.length > 2 ? process.argv[2] === 'testing' : false;
 const IS_TESTING_RESTOCK = process.argv.length > 2 ? process.argv[2] === 'testingRestock' : false;
 const IS_RESTOCK = process.argv.length > 2 ? process.argv[2] === 'restock' : false;
+const IS_PUPPETEER = process.argv.includes('puppeteer');
 
 function intializeWorkers(prefs, captchaPool) {
 	workers = [];
@@ -114,7 +115,7 @@ class SupremeWorker {
 	constructor(prefs, captchaPool) {
 		this.prefs = prefs;
 		this.captchaPool = captchaPool;
-		this.buyApi = new buyRequest.BuyRequest();
+		this.buyApi = IS_PUPPETEER ? new buyProductPuppeteer.BuyProductPuppeteer() : new buyRequest.BuyRequest();
 		this.startTimestampMS = Date.now();
 		console.log("Worker has started", new Date().toUTCString());
 	}
@@ -135,7 +136,7 @@ class SupremeWorker {
 		if (this.stopped === true)
 			return;
 
-		supremeMobile.findItem(this.productDefinition.category, this.productDefinition.name, product => {
+		usedApi().findItem(this.productDefinition.category, this.productDefinition.name, product => {
 			const startTime = new Date().toUTCString();
 			if (product && this.getCaptcha()) {
 				const availableStyles = getAvailableStyles(product, this.productDefinition);
@@ -245,6 +246,10 @@ function getAvailableStyles(product, productDefinition) {
 		.filter(style => style.sizes.length > 0);
 }
 
+function usedApi() {
+	return IS_PUPPETEER ? supremeApi : supremeMobile;
+}
+
 function stringsEqual(string1, string2) {
 	return unifyString(string1) == unifyString(string2);
 }
@@ -261,7 +266,7 @@ function checkForRestock(mainCallback) {
 	var solver = new captchaSolver.CaptchaSolver(prefs.antiCaptchaKey);
 
 	async.eachSeries(droplist, (productDefinition, callback) => {
-		supremeMobile.findItem(productDefinition.category, productDefinition.name, product => {
+		usedApi().findItem(productDefinition.category, productDefinition.name, product => {
 			if (!product) {
 				IS_TESTING_RESTOCK && console.log("Product not found: ", productDefinition.name);
 				return callback();
@@ -272,7 +277,8 @@ function checkForRestock(mainCallback) {
 			if (availableStyles.length > 0) {
 				console.log("Restock: ", productDefinition.name);
 				solver.solveCaptcha(CHECKOUT_URL, DATA_SITEKEY, captchaToken => {
-					new buyRequest.BuyRequest().buyProduct(product,
+					var buyApi = IS_PUPPETEER ? new buyProductPuppeteer.BuyProductPuppeteer() : new buyRequest.BuyRequest();
+					buyApi.buyProduct(product,
 						availableStyles,
 						prefs,
 						captchaToken,
