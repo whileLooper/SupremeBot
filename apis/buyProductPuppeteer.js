@@ -41,7 +41,8 @@ class BuyProductPuppeteer {
             const COUNTRY_SELECTOR = '.order_billing_country';
             const CARD_TYPE_SELECTOR = '.credit_card_type';
             const CARD_NUMBER_SELECTOR = '.cnb';
-            const CARD_MONTH_SELECTOR = '.credit_card_month';
+            const CARD_DATE = '.credit_card_month';
+            const CARD_MONTH_SELECTOR = '#credit_card_month';
             const CARD_YEAR_SELECTOR = '#credit_card_year';
             const CARD_VVAL_SELECTOR = '#cart-vval';
             const RECAPTCHA_RESPONSE_SELECTOR = '#g-recaptcha-response';
@@ -56,8 +57,8 @@ class BuyProductPuppeteer {
             await type(page, ZIP_SELECTOR, prefs.zip);
             await select(page, COUNTRY_SELECTOR, prefs.country);
             await select(page, CARD_TYPE_SELECTOR, prefs.cardType);
-            await select(page, CARD_MONTH_SELECTOR, prefs.cardMonth, CARD_MONTH_SELECTOR);
-            await select(page, CARD_MONTH_SELECTOR, prefs.cardYear, CARD_YEAR_SELECTOR);
+            await select(page, CARD_DATE, prefs.cardMonth, CARD_MONTH_SELECTOR);
+            await select(page, CARD_DATE, prefs.cardYear, CARD_YEAR_SELECTOR);
             await type(page, CARD_VVAL_SELECTOR, prefs.cardVval);
             await page.click(TERMS_SELECTOR);
 
@@ -69,7 +70,7 @@ class BuyProductPuppeteer {
                 await type(page, ADRESS_SELECTOR, prefs.adress);
             }
 
-            await page.waitFor(30000000);
+            await page.waitFor(5000);
 
             await page.evaluate('checkoutAfterCaptcha();');
 
@@ -118,24 +119,24 @@ function type(page, parentSelector, value) {
     });
 }
 
-function select(page, parentSelector, value, childSelector = null) {
+function select(page, parentSelector, value, childSelector) {
     return new Promise(async function (resolve, reject) {
         try {
-            if (childSelector) {
-                var parentElement = await page.$(parentSelector);
-                var childElement = await parentElement.$(childSelector);
-                await childElement.click();
-                optionSelector = childSelector+' option[value="' + value + '"]'
-            } else {
-                await page.click(parentSelector);
-                optionSelector = parentSelector + ' option[value="' + value + '"]';
+            if (!childSelector) {
+                childSelector = parentSelector + ' select';
             }
-            var index = await page.evaluate((selector) => {
-                console.log()
-                return document.querySelector(selector).index, optionSelector;
-            });
-            for (var i = 0; i < index; i++) {
-                await page.keyboard.down('ArrowDown');
+
+            var optionSelector = childSelector + ' option[value="' + value + '"]';
+            var parentElement = await page.$(parentSelector);
+            var childElement = await parentElement.$(childSelector);
+            await childElement.click();
+
+            var startValue = await page.evaluate((selector) => document.querySelector(selector).value, childSelector);
+            var startSelector = childSelector + ' option[value="' + startValue + '"]';
+            var startIndex = await page.evaluate((selector) => document.querySelector(selector).index, startSelector);
+            var index = await page.evaluate((selector) => document.querySelector(selector).index, optionSelector);
+            for (var i = startIndex; i != index; (startIndex < index) ? i++ : i--) {
+                (startIndex < index) ? await page.keyboard.down('ArrowDown') : await page.keyboard.down('ArrowUp');
             }
             await page.keyboard.down('Enter');
             resolve();
