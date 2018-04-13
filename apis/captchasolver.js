@@ -4,7 +4,7 @@ function CaptchaSolver(key) {
 
   this.solveCaptcha = function (url, websiteKey, callback, isTest) {
     if (isTest)
-      return setTimeout(() => callback('123456'), 1* 1000);
+      return setTimeout(() => callback('123456'), 1 * 1000);
 
     anticaptcha.setWebsiteURL(url);
     anticaptcha.setWebsiteKey(websiteKey);
@@ -13,25 +13,25 @@ function CaptchaSolver(key) {
     anticaptcha.getBalance(function (err, balance) {
       if (err) {
         console.error(err);
-        return;
+        return callback(null);;
       }
 
       if (balance > 0) {
         anticaptcha.createTaskProxyless(function (err, taskId) {
           if (err) {
             console.error(err);
-            return;
+            return callback(null);;
           }
 
-          console.log("Captcha Task started:"+ taskId, new Date().toUTCString());
+          console.log("Captcha Task started:" + taskId, new Date().toUTCString());
 
           anticaptcha.getTaskSolution(taskId, function (err, taskSolution) {
             if (err || !taskSolution) {
               console.error(err);
-              return callback (null);
+              return callback(null);
             }
 
-            console.log("Captcha Token Received: "+taskSolution.substring(0, taskSolution.length < 10? taskSolution.length:10)+" for task "+taskId, new Date().toUTCString());
+            console.log("Captcha Token Received: " + taskSolution.substring(0, taskSolution.length < 10 ? taskSolution.length : 10) + " for task " + taskId, new Date().toUTCString());
             callback(taskSolution);
           });
         });
