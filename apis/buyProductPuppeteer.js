@@ -32,42 +32,44 @@ class BuyProductPuppeteer {
 
             await page.waitFor(1000);
 
-            const NAME_SELECTOR = 'order_billing_name';
-            const EMAIL_SELECTOR = 'order_email';
-            const TEL_SELECTOR = 'order_tel';
-            const ADRESS_SELECTOR = 'bo';
-            const CITY_SELECTOR = 'order_billing_city';
-            const ZIP_SELECTOR = 'order_billing_zip';
-            const COUNTRY_SELECTOR = 'order_billing_country';
-            const CARD_TYPE_SELECTOR = 'credit_card_type';
-            const CARD_NUMBER_SELECTOR = 'cnb';
-            const CARD_MONTH_SELECTOR = 'credit_card_month';
-            const CARD_YEAR_SELECTOR = 'credit_card_year';
-            const CARD_VVAL_SELECTOR = 'vval';
-            const RECAPTCHA_RESPONSE_SELECTOR = 'g-recaptcha-response';
-            
+            const NAME_SELECTOR = '.order_billing_name';
+            const EMAIL_SELECTOR = '.order_email';
+            const TEL_SELECTOR = '.order_tel';
+            const ADRESS_SELECTOR = '.bo';
+            const CITY_SELECTOR = '.order_billing_city';
+            const ZIP_SELECTOR = '.order_billing_zip';
+            const COUNTRY_SELECTOR = '.order_billing_country';
+            const CARD_TYPE_SELECTOR = '.credit_card_type';
+            const CARD_NUMBER_SELECTOR = '.cnb';
+            const CARD_MONTH_SELECTOR = '.credit_card_month';
+            const CARD_YEAR_SELECTOR = '#credit_card_year';
+            const CARD_VVAL_SELECTOR = '#cart-vval';
+            const RECAPTCHA_RESPONSE_SELECTOR = '#g-recaptcha-response';
+
             const TERMS_SELECTOR = '#order_terms'
 
-            //use evaluate instaed of eval$ because eval$ is not really working (i think because of the pseudo elements)
-            await page.evaluate((selector, value) => document.getElementById(selector).value = value, NAME_SELECTOR, prefs.name);
-            await page.evaluate((selector, value) => document.getElementById(selector).value = value, EMAIL_SELECTOR, prefs.email);
-            await page.evaluate((selector, value) => document.getElementById(selector).value = value, TEL_SELECTOR, prefs.tel);
-            await page.evaluate((selector, value) => document.getElementById(selector).value = value, CITY_SELECTOR, prefs.city);
-            await page.evaluate((selector, value) => document.getElementById(selector).value = value, ZIP_SELECTOR, prefs.zip);
-            await page.evaluate((selector, value) => document.getElementById(selector).value = value, COUNTRY_SELECTOR, prefs.country);
-            await page.evaluate((selector, value) => document.getElementById(selector).value = value, CARD_TYPE_SELECTOR, prefs.cardType);
-            await page.evaluate((selector, value) => document.getElementById(selector).value = value, CARD_MONTH_SELECTOR, prefs.cardMonth);
-            await page.evaluate((selector, value) => document.getElementById(selector).value = value, CARD_YEAR_SELECTOR, prefs.cardYear);
-            await page.evaluate((selector, value) => document.getElementById(selector).value = value, CARD_VVAL_SELECTOR, prefs.cardVval);
+            //use type because supreme checks for automation
+            await type(page, NAME_SELECTOR, prefs.name);
+            await type(page, EMAIL_SELECTOR, prefs.email);
+            await type(page, TEL_SELECTOR, prefs.tel);
+            await type(page, CITY_SELECTOR, prefs.city);
+            await type(page, ZIP_SELECTOR, prefs.zip);
+            await select(page, COUNTRY_SELECTOR, prefs.country);
+            await select(page, CARD_TYPE_SELECTOR, prefs.cardType);
+            await select(page, CARD_MONTH_SELECTOR, prefs.cardMonth, CARD_MONTH_SELECTOR);
+            await select(page, CARD_MONTH_SELECTOR, prefs.cardYear, CARD_YEAR_SELECTOR);
+            await type(page, CARD_VVAL_SELECTOR, prefs.cardVval);
             await page.click(TERMS_SELECTOR);
-            await page.evaluate((selector, value) => document.getElementById(selector).value = value, RECAPTCHA_RESPONSE_SELECTOR, captchaToken);
+
+            //use evaluate instaed of eval$ because eval$ is not really working (i think because of the pseudo elements)
+            await page.evaluate((selector, value) => document.querySelector(selector).value = value, RECAPTCHA_RESPONSE_SELECTOR, captchaToken);
 
             if (!isTesting) {
-                await page.evaluate((selector, value) => document.getElementById(selector).value = value, CARD_NUMBER_SELECTOR, prefs.cardNumber);
-                await page.evaluate((selector, value) => document.getElementById(selector).value = value, ADRESS_SELECTOR, prefs.adress);
+                await type(page, CARD_NUMBER_SELECTOR, prefs.cardNumber);
+                await type(page, ADRESS_SELECTOR, prefs.adress);
             }
 
-            await page.waitFor(3000);
+            await page.waitFor(30000000);
 
             await page.evaluate('checkoutAfterCaptcha();');
 
@@ -100,6 +102,47 @@ class BuyProductPuppeteer {
         } catch (expection) {
         }
     }
+}
+
+function type(page, parentSelector, value) {
+    return new Promise(async function (resolve, reject) {
+        try {
+            const parentElement = await page.$(parentSelector);
+            const inputField = await parentElement.$('input');
+            await inputField.click();
+            await page.keyboard.type(value);
+            resolve();
+        } catch (e) {
+            reject(e);
+        }
+    });
+}
+
+function select(page, parentSelector, value, childSelector = null) {
+    return new Promise(async function (resolve, reject) {
+        try {
+            if (childSelector) {
+                var parentElement = await page.$(parentSelector);
+                var childElement = await parentElement.$(childSelector);
+                await childElement.click();
+                optionSelector = childSelector+' option[value="' + value + '"]'
+            } else {
+                await page.click(parentSelector);
+                optionSelector = parentSelector + ' option[value="' + value + '"]';
+            }
+            var index = await page.evaluate((selector) => {
+                console.log()
+                return document.querySelector(selector).index, optionSelector;
+            });
+            for (var i = 0; i < index; i++) {
+                await page.keyboard.down('ArrowDown');
+            }
+            await page.keyboard.down('Enter');
+            resolve();
+        } catch (e) {
+            reject(e);
+        }
+    });
 }
 
 exports.BuyProductPuppeteer = BuyProductPuppeteer;
