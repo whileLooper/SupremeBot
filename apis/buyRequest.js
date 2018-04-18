@@ -21,7 +21,7 @@ class BuyRequest {
             await this.addToCart(product.id, styleId, sizeId, csrfToken);
             await this.sleep(350);
             await this.requestCheckoutSite();
-            await this.sleep(3300);
+            await this.sleep(5000);
             await this.checkout(sizeId, prefs, captchaToken, csrfToken, isTesting);
             console.log("End   Time: " + new Date().toUTCString());
             finishCallback(true);

@@ -10,9 +10,9 @@ var buyRequest = require('./apis/buyRequest');
 var buyProductPuppeteer = require('./apis/buyProductPuppeteer');
 
 const START_TIME = { day: 4, hour: 10, minute: 57 };
-const WORKER_COUNT = 2;
-const TIMEOUT_MS = 1000 * 60 * 15; // Beachte dass die zeit schon vor dem drop laeuft
-const CHECKOUT_URL = "https://www.supremenewyork.com/mobile#checkout"; // for captcha solver
+const WORKER_COUNT = 1;
+const TIMEOUT_MS = 1000 * 60 * 5; // Beachte dass die zeit schon vor dem drop laeuft
+const CHECKOUT_URL = "https://www.supremenewyork.com/checkout"; // for captcha solver
 const DATA_SITEKEY = "6LeWwRkUAAAAAOBsau7KpuC9AV-6J8mhw4AjC3Xz"; // for captcha solver
 var workers = [];
 const IS_TESTING = process.argv.length > 2 ? process.argv[2] === 'testing' : false;

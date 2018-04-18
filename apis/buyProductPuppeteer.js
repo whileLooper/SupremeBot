@@ -30,7 +30,7 @@ class BuyProductPuppeteer {
             const CHECKOUT_SELECTOR = '#cart .checkout';
             await page.click(CHECKOUT_SELECTOR);
 
-            await page.waitFor(1000);
+            await page.waitFor(500);
 
             const NAME_SELECTOR = '.order_billing_name';
             const EMAIL_SELECTOR = '.order_email';
@@ -70,16 +70,18 @@ class BuyProductPuppeteer {
                 await type(page, ADRESS_SELECTOR, prefs.adress);
             }
 
-            await page.waitFor(5000);
+            await page.waitFor(3000);
 
             await page.evaluate('checkoutAfterCaptcha();');
 
             page.on('response', response => {
                 const reqUrl = response.request().url();
                 if (reqUrl === 'https://www.supremenewyork.com/checkout.json') {
-                    response.text().then(body => {
+                    response.text().then( async function (body) {
                         console.log(body);
-                        browser.close();
+                        await page.waitFor(250);
+                        await page.screenshot({path: 'results.png', fullPage: true});
+                        await browser.close();
                         finishCallback(true);
                     }).catch(err => {
                         browser.close();
