@@ -149,7 +149,7 @@ class SupremeWorker {
 				} else
 					this.finishWork(false);
 			} else {
-				setTimeout(() => this.checkForProduct(), 500);
+				setTimeout(() => this.checkForProduct(), 1000);
 			}
 		});
 	}
