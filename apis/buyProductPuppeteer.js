@@ -70,7 +70,7 @@ class BuyProductPuppeteer {
                 await type(page, ADRESS_SELECTOR, prefs.adress);
             }
 
-            await page.waitFor(3000);
+            await page.waitFor(4000);
 
             await page.evaluate('checkoutAfterCaptcha();');
 
@@ -109,13 +109,18 @@ class BuyProductPuppeteer {
 
 function type(page, parentSelector, value) {
     return new Promise(async function (resolve, reject) {
+        setTimeout ( ()=> resolve ("timeout, "+parentSelector), 5000);
         try {
-            const parentElement = await page.$(parentSelector);
+            var parentElement = null;
+            while (!parentElement) {
+                parentElement = await page.$(parentSelector);
+            }
             const inputField = await parentElement.$('input');
             await inputField.click();
             await page.keyboard.type(value);
             resolve();
         } catch (e) {
+            console.log(parentSelector);
             reject(e);
         }
     });
