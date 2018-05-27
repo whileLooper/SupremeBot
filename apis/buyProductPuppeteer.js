@@ -77,10 +77,10 @@ class BuyProductPuppeteer {
             page.on('response', response => {
                 const reqUrl = response.request().url();
                 if (reqUrl === 'https://www.supremenewyork.com/checkout.json') {
-                    response.text().then( async function (body) {
+                    response.text().then(async function (body) {
                         console.log(body);
                         await page.waitFor(250);
-                        await page.screenshot({path: 'results.png', fullPage: true});
+                        await page.screenshot({ path: 'results.png', fullPage: true });
                         await browser.close();
                         finishCallback(true);
                     }).catch(err => {
@@ -108,12 +108,10 @@ class BuyProductPuppeteer {
 }
 
 function type(page, parentSelector, value) {
-    return new Promise(async function (resolve, reject) {
-        var isTimedOut = false;
-        setTimeout ( ()=> isTimedOut = true, 5000);
+    var typePromise = new Promise(async function (resolve, reject) {
         try {
             var parentElement = null;
-            while (!parentElement && !isTimedOut) {
+            while (!parentElement) {
                 parentElement = await page.$(parentSelector);
             }
             const inputField = await parentElement.$('input');
@@ -125,20 +123,20 @@ function type(page, parentSelector, value) {
             reject(e);
         }
     });
+    return promiseTimeout(5000, typePromise);
 }
 
 function select(page, parentSelector, value, childSelector) {
-    var isTimedOut = false;
-    setTimeout ( ()=> isTimedOut = true, 5000);
-    return new Promise(async function (resolve, reject) {
+
+    var selectPromise = new Promise(async function (resolve, reject) {
         try {
             if (!childSelector) {
                 childSelector = parentSelector + ' select';
             }
-
             var optionSelector = childSelector + ' option[value="' + value + '"]';
+
             var parentElement = null;
-            while (!parentElement && !isTimedOut) {
+            while (!parentElement) {
                 parentElement = await page.$(parentSelector);
             }
             var childElement = await parentElement.$(childSelector);
@@ -157,6 +155,21 @@ function select(page, parentSelector, value, childSelector) {
             reject(e);
         }
     });
+    return promiseTimeout(5000, selectPromise);
+}
+
+const promiseTimeout = function (ms, promise) {
+    let timeout = new Promise((resolve, reject) => {
+        let id = setTimeout(() => {
+            clearTimeout(id);
+            reject('Timed out in ' + ms + 'ms.')
+        }, ms)
+    });
+
+    return Promise.race([
+        promise,
+        timeout
+    ]);
 }
 
 exports.BuyProductPuppeteer = BuyProductPuppeteer;
