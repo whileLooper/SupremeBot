@@ -109,10 +109,11 @@ class BuyProductPuppeteer {
 
 function type(page, parentSelector, value) {
     return new Promise(async function (resolve, reject) {
-        setTimeout ( ()=> resolve ("timeout, "+parentSelector), 5000);
+        var isTimedOut = false;
+        setTimeout ( ()=> isTimedOut = true, 5000);
         try {
             var parentElement = null;
-            while (!parentElement) {
+            while (!parentElement && !isTimedOut) {
                 parentElement = await page.$(parentSelector);
             }
             const inputField = await parentElement.$('input');
@@ -127,6 +128,8 @@ function type(page, parentSelector, value) {
 }
 
 function select(page, parentSelector, value, childSelector) {
+    var isTimedOut = false;
+    setTimeout ( ()=> isTimedOut = true, 5000);
     return new Promise(async function (resolve, reject) {
         try {
             if (!childSelector) {
@@ -134,7 +137,10 @@ function select(page, parentSelector, value, childSelector) {
             }
 
             var optionSelector = childSelector + ' option[value="' + value + '"]';
-            var parentElement = await page.$(parentSelector);
+            var parentElement = null;
+            while (!parentElement && !isTimedOut) {
+                parentElement = await page.$(parentSelector);
+            }
             var childElement = await parentElement.$(childSelector);
             await childElement.click();
 

@@ -2,6 +2,8 @@ NOW=$(date +"%Y-%m-%d")
 
 trap 'pkill -f droplistFillerServer.js' SIGINT SIGTERM EXIT
 
-node droplistFillerServer.js &> "./frontend-$NOW.txt" &
+mkdir -p logs
 
-node supremebot.js | tee supreme-$NOW.txt
+node droplistFillerServer.js &> "logs/frontend-$NOW.txt" &
+
+node supremebot.js "$@" | tee logs/supreme-$NOW.txt
