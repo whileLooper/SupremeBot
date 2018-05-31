@@ -1,3 +1,5 @@
+#!/bin/bash
+set -x #echo on
 NOW=$(date +"%Y-%m-%d")
 
 trap 'pkill -f droplistFillerServer.js' SIGINT SIGTERM EXIT

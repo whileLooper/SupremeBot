@@ -70,7 +70,7 @@ class BuyProductPuppeteer {
                 await type(page, ADRESS_SELECTOR, prefs.adress);
             }
 
-            await page.waitFor(4000);
+            await page.waitFor(500);
 
             await page.evaluate('checkoutAfterCaptcha();');
 
