@@ -40,7 +40,7 @@ class BuyProductPuppeteer {
             const ZIP_SELECTOR = '.order_billing_zip';
             const COUNTRY_SELECTOR = '.order_billing_country';
             const CARD_TYPE_SELECTOR = '.credit_card_type';
-            const CARD_NUMBER_SELECTOR = '.cnb';
+            const CARD_NUMBER_SELECTOR = '.credit_card_number';
             const CARD_DATE = '.credit_card_month';
             const CARD_MONTH_SELECTOR = '#credit_card_month';
             const CARD_YEAR_SELECTOR = '#credit_card_year';
