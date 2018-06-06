@@ -1,7 +1,12 @@
 #!/bin/bash
-set -x #echo on
 
-if [ "$1" != "fast" ]
+if [ [ $@ = *"testing"* ] ]
+then
+echo "Testing on Linux does not work, because it can not run in non headless mode"
+exit 1
+fi
+
+if [ [ $@ = *"fast"* ] ]
 then
 git pull
 pushd droplist-filler-app
