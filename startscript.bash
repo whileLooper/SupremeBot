@@ -1,7 +1,15 @@
 #!/bin/bash
 set -x #echo on
-NOW=$(date +"%Y-%m-%d")
 
+if [ "$1" != "fast" ]
+then
+git pull
+pushd droplist-filler-app
+ng build
+popd
+fi
+
+NOW=$(date +"%Y-%m-%d")
 trap 'pkill -f droplistFillerServer.js' SIGINT SIGTERM EXIT
 
 mkdir -p logs
