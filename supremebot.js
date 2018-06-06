@@ -15,9 +15,9 @@ const TIMEOUT_MS = 1000 * 60 * 5; // Beachte dass die zeit schon vor dem drop la
 const CHECKOUT_URL = "https://www.supremenewyork.com/checkout"; // for captcha solver
 const DATA_SITEKEY = "6LeWwRkUAAAAAOBsau7KpuC9AV-6J8mhw4AjC3Xz"; // for captcha solver
 var workers = [];
-const IS_TESTING = process.argv.length > 2 ? process.argv[2] === 'testing' : false;
-const IS_TESTING_RESTOCK = process.argv.length > 2 ? process.argv[2] === 'testingRestock' : false;
-const IS_RESTOCK = process.argv.length > 2 ? process.argv[2] === 'restock' : false;
+const IS_TESTING = process.argv.includes('testing');
+const IS_RESTOCK = process.argv.includes('restock');
+const IS_TESTING_RESTOCK = process.argv.includes('testingRestock');
 const IS_PUPPETEER = process.argv.includes('puppeteer');
 
 function intializeWorkers(prefs, captchaPool) {
@@ -47,7 +47,7 @@ function assignToWorker(startTime, productDefinition, callback) {
 
 function startDrop(mainCallback) {
 	var prefs = jsonfile.readFileSync("./prefs.json");
-	var droplist = jsonfile.readFileSync("./droplist.json");
+	var droplist = loadDroplist("./droplist.json");
 	var solver = new captchaSolver.CaptchaSolver(prefs.antiCaptchaKey);
 	var captchaPool = new CaptchaPool(solver);
 	intializeWorkers(prefs, captchaPool);
@@ -260,9 +260,17 @@ function unifyString(string) {
 	return decodeURI(string).toLowerCase();
 }
 
+function loadDroplist(path) {
+	try {
+		return jsonfile.readFileSync("./droplist.json");
+	} catch (e) {
+		return [];
+	}
+}
+
 function checkForRestock(mainCallback) {
 	var prefs = jsonfile.readFileSync("./prefs.json");
-	var droplist = jsonfile.readFileSync("./droplist.json");
+	var droplist = loadDroplist("./droplist.json");
 	var solver = new captchaSolver.CaptchaSolver(prefs.antiCaptchaKey);
 
 	async.eachSeries(droplist, (productDefinition, callback) => {
@@ -315,11 +323,11 @@ function watchRestock() {
 	});
 }
 
-if (IS_TESTING)
+if (IS_TESTING_RESTOCK) {
+	// checkForRestock(() => process.exit());
+} else if (IS_RESTOCK) {
+	// watchRestock();
+} else if (IS_TESTING) {
 	startDrop(() => process.exit());
-else if (IS_TESTING_RESTOCK)
-	checkForRestock(() => process.exit());
-else if (IS_RESTOCK)
-	watchRestock();
-else
+} else
 	waitForDrop();
