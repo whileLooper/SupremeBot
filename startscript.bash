@@ -6,7 +6,7 @@ echo "Testing on Linux does not work, because it can not run in non headless mod
 exit 1
 fi
 
-if [[ $@ = *"fast"* ]]
+if [[ $@ != *"fast"* ]]
 then
 git pull
 pushd droplist-filler-app
