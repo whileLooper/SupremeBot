@@ -12,10 +12,12 @@ var api = {};
 api.url = 'http://www.supremenewyork.com';
 
 api.findItem = function (category, keywords, mainCallback) {
-    category = category ? category.toLowerCase() : null;
+    category = category ? category.toLowerCase() : "";
+    category = category == "" ? "bags" : category;
+    category = category.replace('-', '_')
     keywords = keywords ? keywords.toLowerCase() : null;
-    if (!keywords || !category)
-        return callback(null);
+    if (!keywords)
+        return mainCallback(null);
 
     var url = SHOP_URL + '/' + category;
     request(url, function (err, resp, html) {
