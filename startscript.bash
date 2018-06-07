@@ -14,7 +14,7 @@ ng build
 popd
 fi
 
-NOW=$(date +"%Y-%m-%d")
+NOW=$(date +"%Y-%m-%d_%H:%M:%S")
 trap 'pkill -f droplistFillerServer.js' SIGINT SIGTERM EXIT
 
 mkdir -p logs
