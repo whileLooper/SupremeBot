@@ -35,7 +35,7 @@ class BuyProductPuppeteer {
             const NAME_SELECTOR = '.order_billing_name';
             const EMAIL_SELECTOR = '.order_email';
             const TEL_SELECTOR = '.order_tel';
-            const ADRESS_SELECTOR = '.bo';
+            const ADRESS_SELECTOR = '.order_billing_address';
             const CITY_SELECTOR = '.order_billing_city';
             const ZIP_SELECTOR = '.order_billing_zip';
             const COUNTRY_SELECTOR = '.order_billing_country';
