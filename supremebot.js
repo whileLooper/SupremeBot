@@ -10,6 +10,7 @@ var buyRequest = require('./apis/buyRequest');
 var buyProductPuppeteer = require('./apis/buyProductPuppeteer');
 
 const START_TIME = { day: 4, hour: 10, minute: 57 };
+const IS_LONDON_TIME = false;
 const WORKER_COUNT = 1;
 const TIMEOUT_MS = 1000 * 60 * 5; // Beachte dass die zeit schon vor dem drop laeuft
 const CHECKOUT_URL = "https://www.supremenewyork.com/checkout"; // for captcha solver
@@ -302,15 +303,20 @@ function checkForRestock(mainCallback) {
 }
 
 function waitForDrop() {
-	const date = moment().tz("Europe/London");
-	if (date.day() === START_TIME.day &&
-		date.hour() === START_TIME.hour &&
-		date.minute() > START_TIME.minute) {
+	const londonDate = moment().tz("Europe/London");
+	const date = new Date();
+	if (IS_LONDON_TIME && isReadyToStart(londonDate.day(), londonDate.hour(), londonDate.minute()) ||
+		!IS_LONDON_TIME && isReadyToStart(date.getUTCDay(), date.getUTCHours(), date.getUTCMinutes())) {
 		console.log("Drop will be soon! Bot starts to prepare!")
 		startDrop(() => waitForDrop());
 	} else {
 		setTimeout(() => waitForDrop(), 10000);
 	}
+}
+
+function isReadyToStart(day, hour, minute) {
+	return day === START_TIME.day && hour === START_TIME.hour &&
+		minute > START_TIME.minute ? true : false;
 }
 
 function isTimestampOlderThan(timestamp, treshold) {
