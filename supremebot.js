@@ -10,7 +10,7 @@ var buyRequest = require('./apis/buyRequest');
 var buyProductPuppeteer = require('./apis/buyProductPuppeteer');
 
 const START_TIME = { day: 4, hour: 10, minute: 57 };
-const IS_LONDON_TIME = false;
+const IS_LONDON_TIME = true;
 const WORKER_COUNT = 1;
 const TIMEOUT_MS = 1000 * 60 * 5; // Beachte dass die zeit schon vor dem drop laeuft
 const CHECKOUT_URL = "https://www.supremenewyork.com/checkout"; // for captcha solver
