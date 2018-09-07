@@ -14,7 +14,7 @@ api.url = 'http://www.supremenewyork.com';
 api.findItem = function (category, keywords, mainCallback) {
     category = category ? category.toLowerCase() : "";
     category = category == "" ? "bags" : category;
-    category = category.replace('-', '_')
+    category = category == "tops-sweater" ? "tops_sweaters" : category;
     keywords = keywords ? keywords.toLowerCase() : null;
     if (!keywords)
         return mainCallback(null);

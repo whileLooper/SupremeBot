@@ -12,7 +12,7 @@ var buyProductPuppeteer = require('./apis/buyProductPuppeteer');
 const START_TIME = { day: 4, hour: 10, minute: 57 };
 const IS_LONDON_TIME = true;
 const WORKER_COUNT = 1;
-const UPDATE_INTERVAL_S = 10;
+const UPDATE_INTERVAL_S = 5;
 const TIMEOUT_MS = 1000 * 60 * 5; // Beachte dass die zeit schon vor dem drop laeuft
 const CHECKOUT_URL = "https://www.supremenewyork.com/checkout"; // for captcha solver
 const DATA_SITEKEY = "6LeWwRkUAAAAAOBsau7KpuC9AV-6J8mhw4AjC3Xz"; // for captcha solver
@@ -84,7 +84,7 @@ class CaptchaPool {
 		if (onlyNewCaptchas.length + this.inProgress < WORKER_COUNT * 2) {
 			this.requestNewCaptcha();
 		}
-		setTimeout(() => this.updateCaptchaPool(), 1000 * UPDATE_INTERVAL_S);
+		setTimeout(() => this.updateCaptchaPool(), 1000 * 5);
 	}
 
 	requestNewCaptcha() {
@@ -151,7 +151,7 @@ class SupremeWorker {
 				} else
 					this.finishWork(false);
 			} else {
-				setTimeout(() => this.checkForProduct(), 1000);
+				setTimeout(() => this.checkForProduct(), 1000 * UPDATE_INTERVAL_S);
 			}
 		});
 	}
