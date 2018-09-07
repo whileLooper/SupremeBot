@@ -3,7 +3,6 @@
 if [[ $@ = *"testing"* ]] && [[ $@ = *"puppeteer"* ]]
 then
 echo "Testing on Linux does not work, because it can not run in non headless mode"
-exit 1
 fi
 
 if [[ $@ != *"fast"* ]]

@@ -23,8 +23,10 @@ api.findItem = function (category, keywords, mainCallback) {
     request(url, function (err, resp, html) {
         var $ = cheerio.load(html);
         var newProduct = null;
+        console.log('Search for articles!');
         $('article').each(function (i, element) {
             const name = $(this).find('h1 .name-link').text().toLowerCase();
+            console.log('Found article:', name);
             if (keywords.split(" ").every(keyword => name.includes(keyword)) &&
                 $(this).find('sold_out_tag').text() == "") {
                 if (!newProduct) {
@@ -37,7 +39,6 @@ api.findItem = function (category, keywords, mainCallback) {
                 var styleUrl = BASE_URL + '/' + $(this).find('h1 .name-link').attr('href');
                 var styleName = $(this).find('p .name-link').text().toLowerCase();
                 newProduct.styles.push({ name: styleName, id: styleUrl });
-
             }
         });
 
@@ -87,7 +88,7 @@ function getSizes(url, callback) {
 
 if (typeof require != 'undefined' && require.main == module) {
     api.findItem("accessories", "night lite", result => {
-        result.styles.forEach(item => console.log(item));
+        result.styles.forEach(item => console.info(item));
     });
 }
 
